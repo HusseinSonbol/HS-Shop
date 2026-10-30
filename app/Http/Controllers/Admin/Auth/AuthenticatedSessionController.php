@@ -52,7 +52,7 @@ class AuthenticatedSessionController extends Controller
             'is_active' => true,
         ], $request->boolean('remember'));
 
-        if (! $validCredentials) {
+        if (!$validCredentials) {
             RateLimiter::hit($throttleKey, self::DECAY_SECONDS);
 
             return back()
@@ -63,7 +63,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $user = Auth::guard('web')->user();
 
-        if (! $user || ! $user->hasPermission('dashboard.access')) {
+        if (!$user || !$user->hasPermission('dashboard.access')) {
             Auth::guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

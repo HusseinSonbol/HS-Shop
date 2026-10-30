@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\Admin\AboutFaqController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerAddressController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProductSupplierController;
+use App\Http\Controllers\Admin\HomepageContentController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductSupplierController;
+use App\Http\Controllers\Admin\ReviewModerationController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\LocaleController;
@@ -90,5 +93,41 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('/suppliers/{supplier}/offers', [ProductSupplierController::class, 'store'])->name('suppliers.offers.store');
         Route::get('/suppliers/{supplier}/offers/{offer}/edit', [ProductSupplierController::class, 'edit'])->name('suppliers.offers.edit');
         Route::put('/suppliers/{supplier}/offers/{offer}', [ProductSupplierController::class, 'update'])->name('suppliers.offers.update');
+    });
+
+    Route::middleware(['auth', 'admin.permission:homepage.manage'])->prefix('homepage')->name('homepage.')->group(function (): void {
+        Route::get('/', [HomepageContentController::class, 'index'])->name('index');
+        Route::post('/initialize', [HomepageContentController::class, 'initializeDefaults'])->name('initialize');
+        Route::patch('/sections', [HomepageContentController::class, 'updateSections'])->name('sections.update');
+        Route::get('/banners/create', [HomepageContentController::class, 'createBanner'])->name('banners.create');
+        Route::post('/banners', [HomepageContentController::class, 'storeBanner'])->name('banners.store');
+        Route::get('/banners/{banner}/edit', [HomepageContentController::class, 'editBanner'])->name('banners.edit');
+        Route::put('/banners/{banner}', [HomepageContentController::class, 'updateBanner'])->name('banners.update');
+        Route::get('/collections', [HomepageContentController::class, 'collections'])->name('collections');
+        Route::post('/collections/{collection}/items', [HomepageContentController::class, 'addCollectionProduct'])->name('collections.items.store');
+        Route::patch('/collections/{collection}/items/order', [HomepageContentController::class, 'reorderCollection'])->name('collections.items.order');
+        Route::delete('/collections/{collection}/items/{item}', [HomepageContentController::class, 'removeCollectionProduct'])->whereNumber('item')->name('collections.items.destroy');
+    });
+
+    Route::middleware(['auth', 'admin.permission:faqs.manage'])->prefix('about-faqs')->name('about-faqs.')->group(function (): void {
+        Route::get('/', [AboutFaqController::class, 'index'])->name('index');
+        Route::get('/create', [AboutFaqController::class, 'create'])->name('create');
+        Route::post('/', [AboutFaqController::class, 'store'])->name('store');
+        Route::get('/{faq}/edit', [AboutFaqController::class, 'edit'])->name('edit');
+        Route::put('/{faq}', [AboutFaqController::class, 'update'])->name('update');
+        Route::delete('/{faq}', [AboutFaqController::class, 'archive'])->name('archive');
+        Route::patch('/{faq}/restore', [AboutFaqController::class, 'restore'])->withTrashed()->name('restore');
+    });
+
+    Route::middleware(['auth', 'admin.permission:reviews.moderate'])->prefix('reviews')->name('reviews.')->group(function (): void {
+        Route::get('/', [ReviewModerationController::class, 'reviews'])->name('index');
+        Route::patch('/{review}/moderation', [ReviewModerationController::class, 'decideReview'])->name('moderation');
+        Route::patch('/{review}/visibility', [ReviewModerationController::class, 'reviewVisibility'])->name('visibility');
+    });
+
+    Route::middleware(['auth', 'admin.permission:feedback.moderate'])->prefix('feedback')->name('feedback.')->group(function (): void {
+        Route::get('/', [ReviewModerationController::class, 'feedback'])->name('index');
+        Route::patch('/{feedback}/moderation', [ReviewModerationController::class, 'decideFeedback'])->name('moderation');
+        Route::patch('/{feedback}/visibility', [ReviewModerationController::class, 'feedbackVisibility'])->name('visibility');
     });
 });

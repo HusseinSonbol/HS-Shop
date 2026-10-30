@@ -118,6 +118,50 @@ class DatabaseSeeder extends Seeder
                 'assigned_by' => null,
                 'created_at' => now(),
             ]);
+
+            $this->seedHomepageStructure();
         });
+    }
+
+    private function seedHomepageStructure(): void
+    {
+        $collections = [
+            'new' => ['New arrivals', 'وصل حديثًا', 20],
+            'popular' => ['Popular products', 'الأكثر شيوعًا', 40],
+        ];
+        foreach ($collections as $code => [$titleEn, $titleAr, $sortOrder]) {
+            DB::table('product_collections')->insertOrIgnore([
+                'code' => $code, 'is_active' => true, 'sort_order' => $sortOrder, 'created_at' => now(), 'updated_at' => now(),
+            ]);
+            $collectionId = DB::table('product_collections')->where('code', $code)->value('id');
+            foreach (['ar' => $titleAr, 'en' => $titleEn] as $locale => $title) {
+                DB::table('product_collection_translations')->insertOrIgnore([
+                    'product_collection_id' => $collectionId, 'locale' => $locale, 'title' => $title, 'created_at' => now(), 'updated_at' => now(),
+                ]);
+            }
+        }
+
+        $sections = [
+            ['home_hero', 'banner_placement', null, 'home_hero', 10, ['Home hero', 'واجهة الهوم']],
+            ['home_new_products', 'product_collection', 'new', null, 20, ['New arrivals', 'وصل حديثًا']],
+            ['home_promo_top', 'banner_placement', null, 'home_promo_top', 30, ['Top promotional banner', 'بانر ترويجي علوي']],
+            ['home_popular_products', 'product_collection', 'popular', null, 40, ['Popular products', 'الأكثر شيوعًا']],
+            ['home_promo_middle', 'banner_placement', null, 'home_promo_middle', 50, ['Middle promotional banner', 'بانر ترويجي أوسط']],
+        ];
+        foreach ($sections as [$code, $type, $collectionCode, $placement, $sortOrder, $headings]) {
+            $collectionId = $collectionCode ? DB::table('product_collections')->where('code', $collectionCode)->value('id') : null;
+            DB::table('homepage_sections')->insertOrIgnore([
+                'code' => $code, 'section_type' => $type, 'product_collection_id' => $collectionId,
+                'banner_placement' => $placement, 'sort_order' => $sortOrder, 'is_enabled' => true,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+            $sectionId = DB::table('homepage_sections')->where('code', $code)->value('id');
+            foreach (['en' => $headings[0], 'ar' => $headings[1]] as $locale => $heading) {
+                DB::table('homepage_section_translations')->insertOrIgnore([
+                    'homepage_section_id' => $sectionId, 'locale' => $locale, 'heading' => $heading,
+                    'created_at' => now(), 'updated_at' => now(),
+                ]);
+            }
+        }
     }
 }

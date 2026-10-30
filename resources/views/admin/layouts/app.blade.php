@@ -53,6 +53,30 @@
                         <span>{{ __('admin.suppliers.navigation') }}</span>
                     </a>
                 @endif
+                @if (auth()->user()->hasPermission('homepage.manage'))
+                    <a class="side-link {{ request()->routeIs('admin.homepage.*') ? 'is-active' : '' }}" href="{{ route('admin.homepage.index') }}" @if (request()->routeIs('admin.homepage.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">▤</span>
+                        <span>{{ __('admin.homepage.navigation') }}</span>
+                    </a>
+                @endif
+                @if (auth()->user()->hasPermission('faqs.manage'))
+                    <a class="side-link {{ request()->routeIs('admin.about-faqs.*') ? 'is-active' : '' }}" href="{{ route('admin.about-faqs.index') }}" @if (request()->routeIs('admin.about-faqs.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">?</span>
+                        <span>{{ __('admin.about_faqs.navigation') }}</span>
+                    </a>
+                @endif
+                @if (auth()->user()->hasPermission('reviews.moderate'))
+                    <a class="side-link {{ request()->routeIs('admin.reviews.*') ? 'is-active' : '' }}" href="{{ route('admin.reviews.index') }}" @if (request()->routeIs('admin.reviews.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">★</span>
+                        <span>{{ __('admin.reviews.navigation') }}</span>
+                    </a>
+                @endif
+                @if (auth()->user()->hasPermission('feedback.moderate'))
+                    <a class="side-link {{ request()->routeIs('admin.feedback.*') ? 'is-active' : '' }}" href="{{ route('admin.feedback.index') }}" @if (request()->routeIs('admin.feedback.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">✎</span>
+                        <span>{{ __('admin.feedback.navigation') }}</span>
+                    </a>
+                @endif
             </nav>
 
             <a class="storefront-link" href="{{ url('/') }}" target="_blank" rel="noopener noreferrer">
