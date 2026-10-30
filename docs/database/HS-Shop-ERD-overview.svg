@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1320" viewBox="0 0 1800 1320" role="img" aria-labelledby="title desc">
+  <title id="title">HS Shop logical database schema overview</title>
+  <desc id="desc">A grouped logical ERD showing the main HS Shop database modules and their relationships from customer and product catalog through supplier assignment, orders, fulfillment, returns, and financial records.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6f8fb"/><stop offset="1" stop-color="#e9eef5"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#53657a"/></marker>
+    <style>
+      text{font-family:Segoe UI,Arial,sans-serif;fill:#172b3d}.title{font-size:34px;font-weight:700}.sub{font-size:16px;fill:#53657a}.panel{fill:#fff;stroke:#cbd5e1;stroke-width:2;rx:18}.head{font-size:22px;font-weight:700}.body{font-size:16px;fill:#34495e}.small{font-size:14px;fill:#53657a}.edge{fill:none;stroke:#53657a;stroke-width:2.5;marker-end:url(#arrow)}.edge2{fill:none;stroke:#8493a5;stroke-width:2;stroke-dasharray:8 6;marker-end:url(#arrow)}.tag{font-size:13px;font-weight:600;fill:#3d5268}.pill{fill:#edf3f8;stroke:#d3dee8;rx:10}.pilltext{font-size:14px;font-weight:600;fill:#31475c}
+    </style>
+  </defs>
+  <rect width="1800" height="1320" fill="url(#bg)"/>
+  <text x="70" y="66" class="title">HS Shop — مخطط قاعدة البيانات المقترح</text>
+  <text x="70" y="98" class="sub">خريطة منطقية للوحدات والعلاقات الرئيسية • التفاصيل الكاملة للحقول والقيود في TABLES.md وERD.md</text>
+
+  <!-- relationship paths behind the module cards -->
+  <path class="edge" d="M420 263 C470 263 470 263 520 263"/><text x="445" y="248" class="tag">يتصفح</text>
+  <path class="edge" d="M860 263 C910 263 910 263 960 263"/><text x="878" y="248" class="tag">سلة → طلب</text>
+  <path class="edge" d="M1300 263 C1350 263 1350 263 1400 263"/><text x="1310" y="248" class="tag">لقطة المورد</text>
+  <path class="edge2" d="M860 214 C1010 112 1260 112 1400 214"/><text x="1010" y="132" class="tag">للمنتج عدة موردين</text>
+  <path class="edge" d="M640 440 C640 480 300 480 300 520"/><text x="420" y="472" class="tag">كتالوج وأسعار محفوظة</text>
+  <path class="edge" d="M1080 440 C1080 480 800 480 800 520"/><text x="850" y="472" class="tag">مراجعات وموافقة</text>
+  <path class="edge" d="M1520 440 C1520 480 1300 480 1300 520"/><text x="1355" y="472" class="tag">شحنة / تحصيل</text>
+  <path class="edge2" d="M300 740 C300 780 520 780 520 820"/><text x="330" y="775" class="tag">مرتجع / استرداد</text>
+  <path class="edge2" d="M800 740 C800 780 880 780 880 820"/><text x="805" y="775" class="tag">تكلفة مباشرة</text>
+  <path class="edge2" d="M1300 740 C1300 780 1240 780 1240 820"/><text x="1255" y="775" class="tag">تسوية ناقل</text>
+  <path class="edge2" d="M1520 440 C1695 560 1660 790 1460 820"/><text x="1585" y="640" class="tag">سجل مالي</text>
+
+  <!-- top row -->
+  <g>
+    <rect class="panel" x="70" y="145" width="350" height="295"/>
+    <rect x="70" y="145" width="350" height="55" rx="18" fill="#e9f1fb"/><text x="95" y="181" class="head">الحسابات والعملاء</text>
+    <text x="95" y="232" class="body">users • customers</text><text x="95" y="264" class="body">roles • permissions • user_roles</text><text x="95" y="296" class="body">customer_addresses</text>
+    <rect class="pill" x="95" y="337" width="270" height="42"/><text x="112" y="364" class="pilltext">تصفح مفتوح • حساب مطلوب للطلب</text>
+    <text x="95" y="410" class="small">موظف أو عميل • صلاحيات لوحة الإدارة</text>
+  </g>
+  <g>
+    <rect class="panel" x="520" y="145" width="340" height="295"/><rect x="520" y="145" width="340" height="55" rx="18" fill="#e8f6f0"/><text x="545" y="181" class="head">الكتالوج والتسعير</text>
+    <text x="545" y="232" class="body">categories • brands • products</text><text x="545" y="264" class="body">variants • attributes • images</text><text x="545" y="296" class="body">translations • collections</text><text x="545" y="328" class="body">availability • regular/sale price history</text>
+    <rect class="pill" x="545" y="355" width="285" height="42"/><text x="560" y="382" class="pilltext">سعر وتوفر محفوظان تاريخيًا</text>
+    <text x="545" y="418" class="small">الموردون مرتبطون بالمنتج</text>
+  </g>
+  <g>
+    <rect class="panel" x="960" y="145" width="340" height="295"/><rect x="960" y="145" width="340" height="55" rx="18" fill="#fff3df"/><text x="985" y="181" class="head">الطلبات والموافقات</text>
+    <text x="985" y="232" class="body">orders • order_items</text><text x="985" y="264" class="body">order_revisions • revision_items</text><text x="985" y="296" class="body">customer_approvals • addresses</text><text x="985" y="328" class="body">order_activity_events • order_costs</text>
+    <rect class="pill" x="985" y="355" width="285" height="42"/><text x="1000" y="382" class="pilltext">كل نسخة تحفظ الأسعار والتفاصيل</text>
+    <text x="985" y="418" class="small">الموافقة مرتبطة بنسخة محددة</text>
+  </g>
+  <g>
+    <rect class="panel" x="1400" y="145" width="330" height="295"/><rect x="1400" y="145" width="330" height="55" rx="18" fill="#f5eafd"/><text x="1425" y="181" class="head">المورد والمنتج</text>
+    <text x="1425" y="232" class="body">suppliers • product_suppliers</text><text x="1425" y="264" class="body">factory • showroom</text><text x="1425" y="296" class="body">selection per order line</text><text x="1425" y="328" class="body">supplier cost/availability history</text>
+    <rect class="pill" x="1425" y="355" width="280" height="42"/><text x="1440" y="382" class="pilltext">مصنع أو معرض • اختيار لكل طلب</text>
+    <text x="1425" y="418" class="small">لا يوجد مخزون داخل النظام</text>
+  </g>
+
+  <!-- middle row -->
+  <g>
+    <rect class="panel" x="70" y="520" width="460" height="220"/><rect x="70" y="520" width="460" height="55" rx="18" fill="#e9f1fb"/><text x="95" y="556" class="head">السلة وتجربة العميل</text>
+    <text x="95" y="610" class="body">carts • cart_items • customer_favorites</text><text x="95" y="642" class="body">product_reviews • customer_feedback</text><text x="95" y="674" class="body">About FAQs • translations</text><text x="95" y="710" class="small">الأدمن يوافق ويتحكم في الظهور والإخفاء</text>
+  </g>
+  <g>
+    <rect class="panel" x="570" y="520" width="460" height="220"/><rect x="570" y="520" width="460" height="55" rx="18" fill="#fff3df"/><text x="595" y="556" class="head">الدفع والشحن والمرتجعات</text>
+    <text x="595" y="610" class="body">payments • transactions • InstaPay proofs</text><text x="595" y="642" class="body">shipments • events • shipment_items</text><text x="595" y="674" class="body">manual collection/cost • settlements later</text><text x="595" y="710" class="small">رسوم العميل منفصلة عن تكلفة الناقل والتحصيل</text>
+  </g>
+  <g>
+    <rect class="panel" x="1070" y="520" width="660" height="220"/><rect x="1070" y="520" width="660" height="55" rx="18" fill="#fcebea"/><text x="1095" y="556" class="head">خدمة العملاء والمحتوى</text>
+    <text x="1095" y="610" class="body">support_tickets • messages • events • attachments</text><text x="1095" y="642" class="body">contact_messages • notifications • activity_logs</text><text x="1095" y="674" class="body">homepage_sections • banners • About FAQs</text><text x="1095" y="710" class="small">إشعارات داخلية محفوظة • دون تحديث لحظي</text>
+  </g>
+
+  <!-- bottom row -->
+  <g>
+    <rect class="panel" x="70" y="820" width="460" height="250"/><rect x="70" y="820" width="460" height="55" rx="18" fill="#e9f1fb"/><text x="95" y="856" class="head">المرتجعات والاستردادات</text>
+    <text x="95" y="910" class="body">returns • return_items • refunds</text><text x="95" y="942" class="body">ربط بسطر الطلب الأصلي أو البديل</text><text x="95" y="974" class="body">تسجيل حالة المرتجع والضرر والتكلفة</text>
+    <rect class="pill" x="95" y="1000" width="385" height="42"/><text x="110" y="1027" class="pilltext">الأثر التشغيلي والمالي محفوظ</text>
+  </g>
+  <g>
+    <rect class="panel" x="570" y="820" width="600" height="250"/><rect x="570" y="820" width="600" height="55" rx="18" fill="#e8f6f0"/><text x="595" y="856" class="head">المصروفات والتكلفة والربحية</text>
+    <text x="595" y="910" class="body">expenses • order_cost_entries</text><text x="595" y="942" class="body">product • delivery • packaging • ads</text><text x="595" y="974" class="body">cash accounts / sessions deferred</text>
+    <rect class="pill" x="595" y="1000" width="530" height="42"/><text x="610" y="1027" class="pilltext">تكلفة المنتج منفصلة عن التشغيل والمرتجعات</text>
+  </g>
+  <g>
+    <rect class="panel" x="1210" y="820" width="520" height="250"/><rect x="1210" y="820" width="520" height="55" rx="18" fill="#f5eafd"/><text x="1235" y="856" class="head">المصاريف والتقارير</text>
+    <text x="1235" y="910" class="body">sales • returns • damage</text><text x="1235" y="942" class="body">weekly/monthly/yearly</text><text x="1235" y="974" class="body">Cairo time • source history</text>
+    <rect class="pill" x="1235" y="1000" width="470" height="42"/><text x="1250" y="1027" class="pilltext">تكلفة المنتج منفصلة عن التشغيل</text>
+  </g>
+
+  <rect x="70" y="1120" width="1660" height="112" rx="18" fill="#17324d"/>
+  <text x="100" y="1160" style="font:700 20px Segoe UI,Arial;fill:#fff">مسار دورة العمل</text>
+  <text x="100" y="1198" style="font:16px Segoe UI,Arial;fill:#eaf1f7">منتج ومورده  →  طلب ونسخة معتمدة  →  إدارة الطلب ومراجعته  →  تجهيز وشحن  →  تحصيل أو مرتجع  →  تكلفة وربحية محفوظة للتقارير</text>
+  <text x="70" y="1275" class="small">ملاحظة: هذه صورة ملخصة للمخطط المنطقي؛ لا تتضمن إدارة شراء الموردين أو المخزون، والقرارات المفتوحة موضحة في docs/OPEN_DECISIONS.md.</text>
+</svg>

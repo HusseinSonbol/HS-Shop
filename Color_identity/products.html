@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HS Shop | المنتجات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brandDark: '#0B132B', brandGold: '#C5A059', brandLight: '#F8F9FA' }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Cairo', sans-serif; }</style>
+</head>
+<body class="bg-brandLight text-brandDark antialiased">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="text-2xl font-black tracking-wider text-brandDark">HS <span class="text-brandGold">SHOP</span></div>
+            <nav class="hidden md:flex items-center gap-8 font-medium">
+                <a href="index.html" class="hover:text-brandGold transition">الرئيسية</a>
+                <a href="products.html" class="text-brandGold font-bold border-b-2 border-brandGold pb-1">المنتجات</a>
+                <a href="about.html" class="hover:text-brandGold transition">عن البراند</a>
+                <a href="contact.html" class="hover:text-brandGold transition">تواصل معنا</a>
+            </nav>
+            <div><a href="contact.html" class="bg-brandDark text-brandGold px-5 py-2.5 rounded-lg font-semibold text-sm">شراكة مع مصنع</a></div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="bg-brandDark text-white py-16 text-center">
+        <h1 class="text-3xl md:text-5xl font-black mb-3">معرض المنتجات</h1>
+        <p class="text-slate-400">نماذج المنتجات المقترحة للإنتاج الصناعي والتوزيع بالجملة</p>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Product 1 -->
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col">
+                <div class="h-64 bg-slate-200 relative flex items-center justify-center text-slate-500 font-semibold text-lg bg-gradient-to-br from-slate-100 to-slate-200">
+                    <span class="absolute top-4 right-4 bg-brandDark text-brandGold text-xs font-bold px-3 py-1 rounded-full">مفروشات</span>
+                    طقم ليفينج فاخر (قطن مصري)
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">طقم سرير فندقي مطرز</h3>
+                        <p class="text-slate-500 text-sm mb-4">مصنوع من أجود خامات القطن المصري طويل التيلة، نعومة فائقة ومتانة عالية.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <span class="text-xs text-brandGold font-bold bg-brandGold/10 px-3 py-1 rounded">جاهز للتصنيع</span>
+                        <span class="text-xs text-slate-400">كود: #HS-BED-01</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col">
+                <div class="h-64 bg-slate-200 relative flex items-center justify-center text-slate-500 font-semibold text-lg bg-gradient-to-br from-slate-100 to-slate-200">
+                    <span class="absolute top-4 right-4 bg-brandDark text-brandGold text-xs font-bold px-3 py-1 rounded-full">ملابس</span>
+                    هودي كاجوال ثقيل
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">هودي كاجوال شتوي</h3>
+                        <p class="text-slate-500 text-sm mb-4">تصميم عصري مريح، خامات مبطنة عالية الجودة ملائمة لكل الفئات.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <span class="text-xs text-brandGold font-bold bg-brandGold/10 px-3 py-1 rounded">جاهز للتصنيع</span>
+                        <span class="text-xs text-slate-400">كود: #HS-CLO-02</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col">
+                <div class="h-64 bg-slate-200 relative flex items-center justify-center text-slate-500 font-semibold text-lg bg-gradient-to-br from-slate-100 to-slate-200">
+                    <span class="absolute top-4 right-4 bg-brandDark text-brandGold text-xs font-bold px-3 py-1 rounded-full">مستلزمات</span>
+                    منسوجات منزلية فاخرة
+                </div>
+                <div class="p-6 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">مجموعة مناشف قطنية</h3>
+                        <p class="text-slate-500 text-sm mb-4">امتصاص عالي، ألوان ثابتة ومقاومة للاستهلاك المتكرر.</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <span class="text-xs text-brandGold font-bold bg-brandGold/10 px-3 py-1 rounded">جاهز للتصنيع</span>
+                        <span class="text-xs text-slate-400">كود: #HS-ESS-03</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brandDark text-white py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm">
+            <p>HS SHOP © 2026 - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+
+</body>
+</html>

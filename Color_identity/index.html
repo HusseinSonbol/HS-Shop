@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HS Shop | الرئيسية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandDark: '#0B132B',
+                        brandGold: '#C5A059',
+                        brandLight: '#F8F9FA'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Cairo', sans-serif; }</style>
+</head>
+<body class="bg-brandLight text-brandDark antialiased">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="text-2xl font-black tracking-wider text-brandDark">HS <span class="text-brandGold">SHOP</span></div>
+            </div>
+            <nav class="hidden md:flex items-center gap-8 font-medium">
+                <a href="index.html" class="text-brandGold font-bold border-b-2 border-brandGold pb-1">الرئيسية</a>
+                <a href="products.html" class="hover:text-brandGold transition">المنتجات</a>
+                <a href="about.html" class="hover:text-brandGold transition">عن البراند</a>
+                <a href="contact.html" class="hover:text-brandGold transition">تواصل معنا</a>
+            </nav>
+            <div>
+                <a href="contact.html" class="bg-brandDark text-brandGold px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-slate-800 transition shadow">شراكة مع مصنع</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-brandDark text-white py-24 overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#C5A059_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <span class="bg-brandGold/20 text-brandGold border border-brandGold/30 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide inline-block mb-6">Made in Egypt 🇪🇬</span>
+            <h1 class="text-4xl md:text-6xl font-black mb-6 tracking-tight">مُنتجات مُختارة .. <span class="text-brandGold">بجودة تليق بك</span></h1>
+            <p class="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light">نصنع المعايير الجديدة في المفروشات، الملابس، والمستلزمات المنزلية بأعلى معايير الجودة والإتقان.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="products.html" class="bg-brandGold text-brandDark font-bold px-8 py-3.5 rounded-xl hover:bg-amber-500 transition shadow-lg">تصفح المعرض</a>
+                <a href="contact.html" class="border border-slate-600 hover:border-brandGold px-8 py-3.5 rounded-xl font-medium transition">تواصل لتوثيق الشراكة</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-black mb-3">أقسامنا الرئيسية</h2>
+            <p class="text-slate-500">نقدم تشكيلة واسعة مصممة خصيصاً لتلبية احتياجات السوق العصري</p>
+            <div class="w-20 h-1 bg-brandGold mx-auto mt-4 rounded-full"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition">
+                <div class="w-16 h-16 bg-brandDark/5 text-brandGold rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold">🛏️</div>
+                <h3 class="text-xl font-bold mb-2">مفروشات منزلية</h3>
+                <p class="text-slate-500 text-sm mb-6">أقمشة فاخرة، تصاميم عصرية مريحة تناسب الفنادق والبيوت.</p>
+                <a href="products.html" class="text-brandGold font-bold text-sm inline-flex items-center gap-1 hover:underline">استعرض المنتجات ←</a>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition">
+                <div class="w-16 h-16 bg-brandDark/5 text-brandGold rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold">👕</div>
+                <h3 class="text-xl font-bold mb-2">ملابس عصرية</h3>
+                <p class="text-slate-500 text-sm mb-6">تشكيلة واسعة من الملابس المصنوعة من أجود خامات القطن المصري.</p>
+                <a href="products.html" class="text-brandGold font-bold text-sm inline-flex items-center gap-1 hover:underline">استعرض المنتجات ←</a>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center hover:shadow-md transition">
+                <div class="w-16 h-16 bg-brandDark/5 text-brandGold rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold">🏡</div>
+                <h3 class="text-xl font-bold mb-2">مستلزمات منزلية</h3>
+                <p class="text-slate-500 text-sm mb-6">التفاصيل الصغيرة التي تصنع فارقاً كبيراً في راحة منزلك.</p>
+                <a href="products.html" class="text-brandGold font-bold text-sm inline-flex items-center gap-1 hover:underline">استعرض المنتجات ←</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brandDark text-white py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <div class="text-xl font-black text-brandGold mb-1">HS SHOP</div>
+                <p class="text-slate-400 text-sm">جميع الحقوق محفوظة © 2026 - منتجات مختارة بجودة تليق بك.</p>
+            </div>
+            <div class="flex gap-6 text-sm text-slate-300">
+                <a href="index.html" class="hover:text-brandGold">الرئيسية</a>
+                <a href="products.html" class="hover:text-brandGold">المنتجات</a>
+                <a href="about.html" class="hover:text-brandGold">عن البراند</a>
+                <a href="contact.html" class="hover:text-brandGold">تواصل معنا</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

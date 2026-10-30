@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HS Shop | عن البراند</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brandDark: '#0B132B', brandGold: '#C5A059', brandLight: '#F8F9FA' }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Cairo', sans-serif; }</style>
+</head>
+<body class="bg-brandLight text-brandDark antialiased">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="text-2xl font-black tracking-wider text-brandDark">HS <span class="text-brandGold">SHOP</span></div>
+            <nav class="hidden md:flex items-center gap-8 font-medium">
+                <a href="index.html" class="hover:text-brandGold transition">الرئيسية</a>
+                <a href="products.html" class="hover:text-brandGold transition">المنتجات</a>
+                <a href="about.html" class="text-brandGold font-bold border-b-2 border-brandGold pb-1">عن البراند</a>
+                <a href="contact.html" class="hover:text-brandGold transition">تواصل معنا</a>
+            </nav>
+            <div><a href="contact.html" class="bg-brandDark text-brandGold px-5 py-2.5 rounded-lg font-semibold text-sm">شراكة مع مصنع</a></div>
+        </div>
+    </header>
+
+    <!-- About Content -->
+    <section class="py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <span class="text-brandGold font-bold tracking-widest text-sm uppercase">هوية البراند</span>
+            <h1 class="text-4xl font-black mt-2 mb-4">التفاصيل الصغيرة تصنع فرقاً كبيراً</h1>
+            <div class="w-20 h-1 bg-brandGold mx-auto rounded-full"></div>
+        </div>
+
+        <div class="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-slate-100 space-y-8 text-lg text-slate-600 leading-relaxed">
+            <p>
+                نحن في <strong class="text-brandDark">HS Shop</strong> نؤمن بأن الراحة تبدأ من التفاصيل الدقيقة واختيار الخامات التي تحترم المستهلك. نسعى لبناء براند مصري رائد يقدم منتجات مختارة بعناية فائقة في مجالات المفروشات، الملابس، والمستلزمات المنزلية.
+            </p>
+            <div class="border-r-4 border-brandGold pr-6 my-6 italic text-brandDark font-semibold">
+                "منتجات مختارة .. بجودة تليق بك" ليست مجرد كلمة عابرة، بل هي المعيار الأساسي الذي نبني به شراكاتنا مع أكبر المصانع المصرية العريقة.
+            </div>
+            <p>
+                نستهدف في خطوتنا الحالية التعاون مع المصانع المتميزة لإنتاج خطوطنا الخاصة بمعايير جودة صارمة، وتغليف راقٍ يعكس الهوية البصرية للبراند، لنصل بالمنتج المصري إلى أعلى مستويات التنافسية في السوق المحلي والإقليمي.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brandDark text-white py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm">
+            <p>HS SHOP © 2026 - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+
+</body>
+</html>
