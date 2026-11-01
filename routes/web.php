@@ -15,9 +15,15 @@ use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\LocaleController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::view('/', 'storefront.index')->name('store.home');
+Route::view('/index.html', 'storefront.index');
+Route::view('/shop', 'storefront.category')->name('store.shop');
+Route::view('/category.html', 'storefront.category');
+Route::view('/category/{slug?}', 'storefront.category')->name('store.category');
+Route::view('/product-v2.html', 'storefront.product-v2');
+Route::view('/product/{slug?}', 'storefront.product-v2')->name('store.product');
+Route::view('/about-us', 'storefront.about-us-4')->name('store.about');
+Route::view('/about-us-4.html', 'storefront.about-us-4');
 
 Route::post('/locale/{locale}', [LocaleController::class, 'update'])
     ->whereIn('locale', ['ar', 'en'])
