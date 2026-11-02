@@ -3,7 +3,9 @@
 namespace App\Services\Admin;
 
 use App\Models\Category;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class CategoryManagementService
@@ -11,35 +13,77 @@ class CategoryManagementService
     /** @param array<string, mixed> $data */
     public function create(array $data, int $actorId): Category
     {
-        return DB::transaction(function () use ($data, $actorId): Category {
-            $this->lockTree();
-            $category = Category::create($this->attributes($data));
-            $this->saveTranslations($category, $data['translations']);
-            $this->log($category, 'created', $actorId, null, $this->snapshot($category));
+        $imagePath = isset($data['image']) && $data['image'] instanceof UploadedFile
+            ? $data['image']->store('categories', 'public')
+            : null;
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile && ! $imagePath) {
+            throw new \RuntimeException('Unable to store category image.');
+        }
 
-            return $category->load('translations');
-        });
+        try {
+            return DB::transaction(function () use ($data, $actorId, $imagePath): Category {
+                $this->lockTree();
+                $attributes = $this->attributes($data);
+                $attributes['image_path'] = $imagePath;
+                $category = Category::create($attributes);
+                $this->saveTranslations($category, $data['translations']);
+                $this->log($category, 'created', $actorId, null, $this->snapshot($category));
+
+                return $category->load('translations');
+            });
+        } catch (\Throwable $exception) {
+            if ($imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
+            throw $exception;
+        }
     }
 
     /** @param array<string, mixed> $data */
     public function update(Category $category, array $data, int $actorId): void
     {
-        DB::transaction(function () use ($category, $data, $actorId): void {
-            $rows = $this->lockTree();
-            $category = Category::query()->whereKey($category->id)->lockForUpdate()->firstOrFail();
-            $parentId = isset($data['parent_id']) ? (int) $data['parent_id'] : null;
-            if ($parentId && $this->wouldCreateCycleInRows($category->id, $parentId, $rows)) {
-                throw ValidationException::withMessages(['parent_id' => __('admin.categories.validation.cycle')]);
-            }
-            if (! $data['is_active'] && Category::query()->whereIn('id', $this->descendantIds($category->id))->where('is_active', true)->exists()) {
-                throw ValidationException::withMessages(['category' => __('admin.categories.errors.hide_children_first')]);
-            }
+        $newImagePath = isset($data['image']) && $data['image'] instanceof UploadedFile
+            ? $data['image']->store('categories', 'public')
+            : null;
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile && ! $newImagePath) {
+            throw new \RuntimeException('Unable to store category image.');
+        }
 
-            $before = $this->snapshot($category->load('translations'));
-            $category->update($this->attributes($data));
-            $this->saveTranslations($category, $data['translations']);
-            $this->log($category, 'updated', $actorId, $before, $this->snapshot($category->fresh('translations')));
-        });
+        $oldImagePath = null;
+        try {
+            DB::transaction(function () use ($category, $data, $actorId, $newImagePath, &$oldImagePath): void {
+                $rows = $this->lockTree();
+                $category = Category::query()->whereKey($category->id)->lockForUpdate()->firstOrFail();
+                $parentId = isset($data['parent_id']) ? (int) $data['parent_id'] : null;
+                if ($parentId && $this->wouldCreateCycleInRows($category->id, $parentId, $rows)) {
+                    throw ValidationException::withMessages(['parent_id' => __('admin.categories.validation.cycle')]);
+                }
+                if (! $data['is_active'] && Category::query()->whereIn('id', $this->descendantIds($category->id))->where('is_active', true)->exists()) {
+                    throw ValidationException::withMessages(['category' => __('admin.categories.errors.hide_children_first')]);
+                }
+
+                $before = $this->snapshot($category->load('translations'));
+                $oldImagePath = $category->image_path;
+                $attributes = $this->attributes($data);
+                if ($newImagePath) {
+                    $attributes['image_path'] = $newImagePath;
+                } elseif ((bool) ($data['remove_image'] ?? false)) {
+                    $attributes['image_path'] = null;
+                }
+                $category->update($attributes);
+                $this->saveTranslations($category, $data['translations']);
+                $this->log($category, 'updated', $actorId, $before, $this->snapshot($category->fresh('translations')));
+            });
+        } catch (\Throwable $exception) {
+            if ($newImagePath) {
+                Storage::disk('public')->delete($newImagePath);
+            }
+            throw $exception;
+        }
+
+        if ($oldImagePath && ($newImagePath || (bool) ($data['remove_image'] ?? false))) {
+            Storage::disk('public')->delete($oldImagePath);
+        }
     }
 
     public function archive(Category $category, int $actorId): void
@@ -152,6 +196,7 @@ class CategoryManagementService
         return [
             'parent_id' => $category->parent_id,
             'slug' => $category->slug,
+            'image_path' => $category->image_path,
             'sort_order' => $category->sort_order,
             'is_active' => $category->is_active,
             'translations' => $category->translations->mapWithKeys(fn ($translation) => [$translation->locale => [

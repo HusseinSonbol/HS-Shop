@@ -4,11 +4,19 @@
 
 @section('content')
     <div class="mb-4"><h1 class="h3 mb-0">{{ $category->exists ? __('admin.categories.edit_title') : __('admin.categories.create_title') }}</h1></div>
-    <form method="POST" action="{{ $category->exists ? route('admin.categories.update', $category) : route('admin.categories.store') }}" class="card card-body gap-4">
+    <form method="POST" enctype="multipart/form-data" action="{{ $category->exists ? route('admin.categories.update', $category) : route('admin.categories.store') }}" class="card card-body gap-4">
         @csrf
         @if ($category->exists) @method('PUT') @endif
         <div class="row g-3">
             <div class="col-md-6"><label class="form-label" for="slug">{{ __('admin.categories.slug') }}</label><input id="slug" name="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug', $category->slug) }}" required maxlength="190" dir="ltr" placeholder="home-furnishings">@error('slug')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+            <div class="col-md-6">
+                <label class="form-label" for="category-image">{{ __('admin.categories.image') }}</label>
+                @if ($category->image_path)<div class="mb-2"><img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($category->image_path) }}" alt="" class="rounded" style="width:120px;height:96px;object-fit:cover"></div>@endif
+                <input id="category-image" name="image" type="file" accept="image/jpeg,image/png,image/webp" class="form-control @error('image') is-invalid @enderror">
+                <div class="form-text">{{ __('admin.categories.image_help') }}</div>
+                @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                @if ($category->image_path)<input type="hidden" name="remove_image" value="0"><label class="form-check mt-2"><input class="form-check-input" type="checkbox" name="remove_image" value="1" @checked(old('remove_image'))><span class="form-check-label">{{ __('admin.categories.remove_image') }}</span></label>@endif
+            </div>
             <div class="col-md-6"><label class="form-label" for="parent_id">{{ __('admin.categories.parent') }}</label><select id="parent_id" name="parent_id" class="form-select @error('parent_id') is-invalid @enderror"><option value="">{{ __('admin.categories.no_parent') }}</option>@foreach ($parentOptions as $option)<option value="{{ $option->id }}" @selected((string) old('parent_id', $category->parent_id) === (string) $option->id)>{{ $option->translations->firstWhere('locale', app()->getLocale())?->name ?? $option->slug }}</option>@endforeach</select>@error('parent_id')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
             <div class="col-md-6"><label class="form-label" for="sort_order">{{ __('admin.categories.order') }}</label><input id="sort_order" type="number" min="0" max="1000000" name="sort_order" class="form-control @error('sort_order') is-invalid @enderror" value="{{ old('sort_order', $category->sort_order ?? 0) }}" required>@error('sort_order')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
             <div class="col-md-6"><label class="form-label" for="is_active">{{ __('admin.categories.status') }}</label><input type="hidden" name="is_active" value="0"><select id="is_active" name="is_active" class="form-select"><option value="1" @selected((string) old('is_active', $category->exists ? (int) $category->is_active : 1) === '1')>{{ __('admin.categories.active_badge') }}</option><option value="0" @selected((string) old('is_active', $category->exists ? (int) $category->is_active : 1) === '0')>{{ __('admin.categories.inactive_badge') }}</option></select></div>

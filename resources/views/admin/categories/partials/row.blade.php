@@ -1,5 +1,6 @@
 <tr>
     <td><span style="padding-inline-start: {{ $depth * 1.5 }}rem">{{ $category->translations->firstWhere('locale', app()->getLocale())?->name ?? $category->translations->firstWhere('locale', 'ar')?->name }}</span></td>
+    <td>@if ($category->image_path)<img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($category->image_path) }}" alt="" class="rounded" style="width:56px;height:44px;object-fit:cover">@else<span class="text-body-secondary">—</span>@endif</td>
     <td><code>{{ $category->slug }}</code></td>
     <td>{{ $category->sort_order }}</td>
     <td>@if ($category->trashed()) {{ __('admin.categories.archived_badge') }} @elseif ($category->is_active) {{ __('admin.categories.active_badge') }} @else {{ __('admin.categories.inactive_badge') }} @endif</td>

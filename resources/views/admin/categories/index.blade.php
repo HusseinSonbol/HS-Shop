@@ -28,7 +28,7 @@
         @else
             <div class="table-scroll">
                 <table class="table table-hover align-middle orders-table">
-                    <thead><tr><th>{{ __('admin.categories.name') }}</th><th>{{ __('admin.categories.slug') }}</th><th>{{ __('admin.categories.order') }}</th><th>{{ __('admin.categories.status') }}</th><th>{{ __('admin.categories.actions') }}</th></tr></thead>
+                    <thead><tr><th>{{ __('admin.categories.name') }}</th><th>{{ __('admin.categories.image') }}</th><th>{{ __('admin.categories.slug') }}</th><th>{{ __('admin.categories.order') }}</th><th>{{ __('admin.categories.status') }}</th><th>{{ __('admin.categories.actions') }}</th></tr></thead>
                     <tbody>
                         @foreach ($categories as $category)
                             @include('admin.categories.partials.row', ['category' => $category, 'depth' => 0])
