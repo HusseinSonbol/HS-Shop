@@ -1,0 +1,264 @@
+body.common-home {
+    --hs-navy: #0b132b;
+    --hs-gold: #c5a059;
+    --hs-gold-soft: #f3ead7;
+    --hs-paper: #f8f9fa;
+    --hs-text: #202637;
+    color: var(--hs-text);
+    background-color: #fff;
+}
+
+body.common-home .img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+body.common-home .text-left { text-align: left !important; }
+body.common-home .text-right { text-align: right !important; }
+body.common-home .pull-left { float: left !important; }
+body.common-home .pull-right { float: right !important; }
+body.common-home .list-inline > li { display: inline-block; }
+body.common-home .input-group-btn { display: flex; width: auto; }
+body.common-home .btn-xs { padding: 1px 5px; font-size: 12px; line-height: 1.5; }
+body.common-home .btn-default { color: #333; background-color: #fff; border-color: #ccc; }
+body.common-home .caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-inline-start: 2px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-inline: 4px solid transparent;
+}
+
+/* Keep the Bootstrap 3 grid breakpoints used by the original eMarket markup
+   while laying the page out with Bootstrap 5. */
+body.common-home .col-xs-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+body.common-home .col-xs-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+body.common-home .col-xs-3 { flex: 0 0 25%; max-width: 25%; }
+body.common-home .col-xs-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+body.common-home .col-xs-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+body.common-home .col-xs-6 { flex: 0 0 50%; max-width: 50%; }
+body.common-home .col-xs-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+body.common-home .col-xs-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+body.common-home .col-xs-9 { flex: 0 0 75%; max-width: 75%; }
+body.common-home .col-xs-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+body.common-home .col-xs-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+body.common-home .col-xs-12 { flex: 0 0 100%; max-width: 100%; }
+body.common-home .col-xs-15 { flex: 0 0 20%; max-width: 20%; }
+
+@media (max-width: 767.98px) {
+    body.common-home .hidden-xs { display: none !important; }
+    body.common-home .row > [class*="col-sm-"],
+    body.common-home .row > [class*="col-md-"],
+    body.common-home .row > [class*="col-lg-"] {
+        flex: 0 0 100%; width: 100%; max-width: 100%;
+    }
+    body.common-home .row > .col-xs-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+    body.common-home .row > .col-xs-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+    body.common-home .row > .col-xs-3 { flex: 0 0 25%; max-width: 25%; }
+    body.common-home .row > .col-xs-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+    body.common-home .row > .col-xs-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+    body.common-home .row > .col-xs-6 { flex: 0 0 50%; max-width: 50%; }
+    body.common-home .row > .col-xs-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+    body.common-home .row > .col-xs-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+    body.common-home .row > .col-xs-9 { flex: 0 0 75%; max-width: 75%; }
+    body.common-home .row > .col-xs-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+    body.common-home .row > .col-xs-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+    body.common-home .row > .col-xs-12 { flex: 0 0 100%; max-width: 100%; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    body.common-home .hidden-sm { display: none !important; }
+    body.common-home .row > [class*="col-md-"],
+    body.common-home .row > [class*="col-lg-"] { flex: 0 0 100%; width: 100%; max-width: 100%; }
+    body.common-home .row > .col-sm-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+    body.common-home .row > .col-sm-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+    body.common-home .row > .col-sm-3 { flex: 0 0 25%; max-width: 25%; }
+    body.common-home .row > .col-sm-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+    body.common-home .row > .col-sm-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+    body.common-home .row > .col-sm-6 { flex: 0 0 50%; max-width: 50%; }
+    body.common-home .row > .col-sm-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+    body.common-home .row > .col-sm-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+    body.common-home .row > .col-sm-9 { flex: 0 0 75%; max-width: 75%; }
+    body.common-home .row > .col-sm-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+    body.common-home .row > .col-sm-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+    body.common-home .row > .col-sm-12 { flex: 0 0 100%; max-width: 100%; }
+    body.common-home .row > .col-sm-15 { flex: 0 0 20%; max-width: 20%; }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    body.common-home .hidden-md { display: none !important; }
+    body.common-home .row > [class*="col-lg-"] { flex: 0 0 100%; width: 100%; max-width: 100%; }
+    body.common-home .row > .col-md-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+    body.common-home .row > .col-md-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+    body.common-home .row > .col-md-3 { flex: 0 0 25%; max-width: 25%; }
+    body.common-home .row > .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+    body.common-home .row > .col-md-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+    body.common-home .row > .col-md-6 { flex: 0 0 50%; max-width: 50%; }
+    body.common-home .row > .col-md-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+    body.common-home .row > .col-md-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+    body.common-home .row > .col-md-9 { flex: 0 0 75%; max-width: 75%; }
+    body.common-home .row > .col-md-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+    body.common-home .row > .col-md-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+    body.common-home .row > .col-md-12 { flex: 0 0 100%; max-width: 100%; }
+    body.common-home .row > .col-md-15 { flex: 0 0 20%; max-width: 20%; }
+}
+
+@media (min-width: 1200px) {
+    body.common-home .hidden-lg { display: none !important; }
+    body.common-home .visible-lg { display: block !important; }
+    body.common-home .row > .col-lg-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+    body.common-home .row > .col-lg-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+    body.common-home .row > .col-lg-3 { flex: 0 0 25%; max-width: 25%; }
+    body.common-home .row > .col-lg-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+    body.common-home .row > .col-lg-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+    body.common-home .row > .col-lg-6 { flex: 0 0 50%; max-width: 50%; }
+    body.common-home .row > .col-lg-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+    body.common-home .row > .col-lg-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+    body.common-home .row > .col-lg-9 { flex: 0 0 75%; max-width: 75%; }
+    body.common-home .row > .col-lg-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+    body.common-home .row > .col-lg-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+    body.common-home .row > .col-lg-12 { flex: 0 0 100%; max-width: 100%; }
+    body.common-home .row > .col-lg-15 { flex: 0 0 20%; max-width: 20%; }
+}
+
+body.common-home .visible-lg { display: none !important; }
+
+body.common-home a:hover,
+body.common-home .container-megamenu.horizontal ul.megamenu > li.active > a,
+body.common-home .container-megamenu.horizontal ul.megamenu > li.active_menu > a,
+body.common-home .typeheader-1 .container-megamenu.horizontal ul.megamenu > li.home > a,
+body.common-home .typeheader-1 .container-megamenu.horizontal ul.megamenu > li:hover > a,
+body.common-home .category-style .list-group > li a:hover,
+body.common-home .category-style .list-group > li .active,
+body.common-home .price .price-new,
+body.common-home .price span.price {
+    color: var(--hs-gold) !important;
+}
+
+body.common-home .header-top,
+body.common-home .header-bottom,
+body.common-home .footer-bottom,
+body.common-home #content .main-right .module h3.modtitle span {
+    background-color: var(--hs-navy) !important;
+}
+
+body.common-home .main-left .module h3.modtitle::after,
+body.common-home .module h3.modtitle::after,
+body.common-home .label-new,
+body.common-home .label-sale,
+body.common-home .label-product-new,
+body.common-home .label-product-sale,
+body.common-home .label-percent,
+body.common-home .back-to-top:hover,
+body.common-home .footer-container.typefooter-1 .socials li a:hover,
+body.common-home .product-simple .extraslider .owl2-controls .owl2-dots .owl2-dot:hover,
+body.common-home .product-simple .extraslider .owl2-controls .owl2-dots .owl2-dot.active,
+body.common-home .listingtab-layout1 .ltabs-tabs li.ltabs-tab::after {
+    background-color: var(--hs-gold) !important;
+    border-color: var(--hs-gold) !important;
+}
+
+body.common-home .label-new,
+body.common-home .label-sale,
+body.common-home .label-product-new,
+body.common-home .label-product-sale,
+body.common-home .label-percent {
+    color: var(--hs-navy) !important;
+}
+
+body.common-home .button-search,
+body.common-home #sosearchpro .search button,
+body.common-home .btn-primary,
+body.common-home .btn-mega,
+body.common-home .button_submit {
+    background-color: var(--hs-navy) !important;
+    border-color: var(--hs-navy) !important;
+    color: #fff !important;
+}
+
+body.common-home .btn-primary:hover,
+body.common-home .btn-mega:hover,
+body.common-home .button-search:hover,
+body.common-home #sosearchpro .search button:hover,
+body.common-home .button_submit:hover,
+body.common-home .product-item-container .left-block .button-group .btn-button:hover,
+body.common-home .product-item-container .right-block .list-block .btn-button:hover,
+body.common-home .deals-layout1 .so-deal .extraslider-inner .item .image .button-group .btn-button:hover {
+    background-color: var(--hs-gold) !important;
+    border-color: var(--hs-gold) !important;
+    color: var(--hs-navy) !important;
+}
+
+body.common-home .container-megamenu.horizontal ul.megamenu > li > a:hover,
+body.common-home .container-megamenu.horizontal ul.megamenu > li.active > a,
+body.common-home .container-megamenu.horizontal ul.megamenu > li.active_menu > a,
+body.common-home .container-megamenu.horizontal ul.megamenu li .sub-menu .content a:hover,
+body.common-home header ul.top-link > li .btn-group .btn-link:hover,
+body.common-home header ul.top-link > li > a:hover,
+body.common-home .product-item-container .caption h4 a:hover,
+body.common-home .product-simple .item-title a:hover,
+body.common-home .listingtab-layout1 .ltabs-tabs li.ltabs-tab .ltabs-tab-label:hover,
+body.common-home .listingtab-layout1 .ltabs-tabs li.ltabs-tab.tab-sel .ltabs-tab-label,
+body.common-home .product-simple .extraslider .owl2-controls .owl2-nav > div:hover,
+body.common-home .footer-container.typefooter-1 a:hover,
+body.common-home .typefooter-1 .footer-middle .footer-links li a:hover {
+    color: var(--hs-gold) !important;
+}
+
+body.common-home .product-filter,
+body.common-home .module h3.modtitle,
+body.common-home .footer-middle {
+    border-color: #e8e9ed;
+}
+
+body.common-home .form-control:focus,
+body.common-home input:focus,
+body.common-home select:focus {
+    border-color: var(--hs-gold) !important;
+    box-shadow: 0 0 0 2px rgb(197 160 89 / 18%);
+}
+
+body.common-home .footer-container.typefooter-1 .footer-bottom,
+body.common-home .footer-container.typefooter-1 .footer-bottom a {
+    color: #fff;
+}
+
+body.common-home .typeheader-1 .navbar-logo .logo img {
+    display: block;
+    max-width: 110px;
+    max-height: 60px;
+    width: auto;
+    height: auto;
+    margin-inline: auto;
+    object-fit: contain;
+}
+
+body.common-home .typeheader-1 .container-megamenu.horizontal ul.megamenu > li.home > a,
+body.common-home .typeheader-1 .container-megamenu.horizontal ul.megamenu > li:hover > a,
+body.common-home .typeheader-1 .container-megamenu.horizontal ul.megamenu > li.active > a,
+body.common-home .typeheader-1 .container-megamenu.horizontal ul.megamenu > li.menu_active > a,
+body.common-home header ul.top-link > li .btn-group .btn-link:hover,
+body.common-home header ul.top-link > li > a:hover,
+body.common-home .product-item-container .caption h4 a:hover,
+body.common-home .product-simple .item-title a:hover,
+body.common-home .listingtab-layout1 .ltabs-tabs li.ltabs-tab .ltabs-tab-label:hover,
+body.common-home .listingtab-layout1 .ltabs-tabs li.ltabs-tab.tab-sel .ltabs-tab-label,
+body.common-home .product-simple .extraslider .owl2-controls .owl2-nav > div:hover {
+    color: var(--hs-gold) !important;
+}
+
+body.common-home .deals-layout1 .so-deal .extraslider-inner .item .image .label-product-sale,
+body.common-home .deals-layout1 .so-deal .extraslider-inner .item .image .label-product-new {
+    background-color: var(--hs-gold) !important;
+    color: var(--hs-navy) !important;
+}
+
+@media (max-width: 767px) {
+    body.common-home .typeheader-1 .navbar-logo .logo img {
+        max-width: 82px;
+        max-height: 46px;
+    }
+}

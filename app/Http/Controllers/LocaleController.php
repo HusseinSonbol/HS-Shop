@@ -19,7 +19,7 @@ class LocaleController extends Controller
         $request->user()?->forceFill(['preferred_locale' => $locale])->save();
 
         $previousUrl = URL::previous();
-        if ($this->isLocalAdminUrl($previousUrl, $request)) {
+        if ($this->isSameOriginStorefrontUrl($previousUrl, $request)) {
             return redirect()->to($previousUrl);
         }
 
@@ -28,7 +28,7 @@ class LocaleController extends Controller
         );
     }
 
-    private function isLocalAdminUrl(string $url, Request $request): bool
+    private function isSameOriginStorefrontUrl(string $url, Request $request): bool
     {
         $target = parse_url($url);
         if (! is_array($target) || ! isset($target['scheme'], $target['host'], $target['path'])) {
@@ -40,8 +40,8 @@ class LocaleController extends Controller
             && strtolower($target['scheme']) === strtolower($current['scheme'])
             && strtolower($target['host']) === strtolower($current['host'])
             && ($target['port'] ?? null) === ($current['port'] ?? null);
-        $isAdminPath = $target['path'] === '/admin' || str_starts_with($target['path'], '/admin/');
+        $isStorefrontPath = ! str_starts_with($target['path'], '/admin');
 
-        return $sameOrigin && $isAdminPath;
+        return $sameOrigin && $isStorefrontPath;
     }
 }
