@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AboutFaqController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerAddressController;
+use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HomepageContentController;
@@ -13,17 +14,43 @@ use App\Http\Controllers\Admin\ReviewModerationController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\Storefront\HomeController;
+use App\Http\Controllers\Storefront\ContactMessageController as StorefrontContactMessageController;
+use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
+use App\Http\Controllers\Storefront\CartItemController as StorefrontCartItemController;
+use App\Http\Controllers\Storefront\CustomerAccountController;
+use App\Http\Controllers\Storefront\ProductFavoriteController;
+use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'storefront.index')->name('store.home');
-Route::view('/index.html', 'storefront.index');
-Route::view('/shop', 'storefront.category')->name('store.shop');
-Route::view('/category.html', 'storefront.category');
-Route::view('/category/{slug?}', 'storefront.category')->name('store.category');
+Route::get('/', HomeController::class)->name('store.home');
+Route::get('/index.html', HomeController::class);
+Route::get('/shop', [StorefrontCategoryController::class, 'index'])->name('store.shop');
+Route::get('/category.html', [StorefrontCategoryController::class, 'index']);
+Route::get('/category/{slug?}', [StorefrontCategoryController::class, 'index'])->name('store.category');
 Route::view('/product-v2.html', 'storefront.product-v2');
-Route::view('/product/{slug?}', 'storefront.product-v2')->name('store.product');
+Route::get('/product/{slug?}', [StorefrontProductController::class, 'show'])->name('store.product');
+Route::post('/cart/items', [StorefrontCartItemController::class, 'store'])
+    ->middleware('throttle:30,1')
+    ->name('store.cart.items.store');
+Route::get('/account/login', [CustomerAccountController::class, 'createLogin'])->name('store.account.login');
+Route::post('/account/login', [CustomerAccountController::class, 'storeLogin'])
+    ->middleware('throttle:10,1')
+    ->name('store.account.login.store');
+Route::get('/account/register', [CustomerAccountController::class, 'createRegistration'])->name('store.account.register');
+Route::post('/account/register', [CustomerAccountController::class, 'storeRegistration'])
+    ->middleware('throttle:5,10')
+    ->name('store.account.register.store');
+Route::post('/account/logout', [CustomerAccountController::class, 'destroy'])->name('store.account.logout');
+Route::post('/product/{product:slug}/favorite', [ProductFavoriteController::class, 'update'])
+    ->middleware('throttle:30,1')
+    ->name('store.favorites.update');
 Route::view('/about-us', 'storefront.about-us-4')->name('store.about');
 Route::view('/about-us-4.html', 'storefront.about-us-4');
+
+Route::post('/contact-messages', [StorefrontContactMessageController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('store.contact-messages.store');
 
 Route::post('/locale/{locale}', [LocaleController::class, 'update'])
     ->whereIn('locale', ['ar', 'en'])
@@ -39,6 +66,12 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
     Route::middleware(['auth', 'admin.permission:dashboard.access'])->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
+    });
+
+    Route::middleware(['auth', 'admin.permission:contact_messages.manage'])->prefix('contact-messages')->name('contact-messages.')->group(function (): void {
+        Route::get('/', [AdminContactMessageController::class, 'index'])->name('index');
+        Route::get('/{contactMessage}', [AdminContactMessageController::class, 'show'])->whereNumber('contactMessage')->name('show');
+        Route::patch('/{contactMessage}/status', [AdminContactMessageController::class, 'updateStatus'])->whereNumber('contactMessage')->name('status');
     });
 
     Route::middleware(['auth', 'admin.permission:users.manage'])->group(function (): void {
@@ -109,6 +142,11 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('/banners', [HomepageContentController::class, 'storeBanner'])->name('banners.store');
         Route::get('/banners/{banner}/edit', [HomepageContentController::class, 'editBanner'])->name('banners.edit');
         Route::put('/banners/{banner}', [HomepageContentController::class, 'updateBanner'])->name('banners.update');
+        Route::get('/testimonials/create', [HomepageContentController::class, 'createTestimonial'])->name('testimonials.create');
+        Route::post('/testimonials', [HomepageContentController::class, 'storeTestimonial'])->name('testimonials.store');
+        Route::get('/testimonials/{testimonialId}/edit', [HomepageContentController::class, 'editTestimonial'])->whereUuid('testimonialId')->name('testimonials.edit');
+        Route::put('/testimonials/{testimonialId}', [HomepageContentController::class, 'updateTestimonial'])->whereUuid('testimonialId')->name('testimonials.update');
+        Route::delete('/testimonials/{testimonialId}', [HomepageContentController::class, 'destroyTestimonial'])->whereUuid('testimonialId')->name('testimonials.destroy');
         Route::get('/collections', [HomepageContentController::class, 'collections'])->name('collections');
         Route::post('/collections/{collection}/items', [HomepageContentController::class, 'addCollectionProduct'])->name('collections.items.store');
         Route::patch('/collections/{collection}/items/order', [HomepageContentController::class, 'reorderCollection'])->name('collections.items.order');
