@@ -77,6 +77,12 @@
                         <span>{{ __('admin.feedback.navigation') }}</span>
                     </a>
                 @endif
+                @if (auth()->user()->hasPermission('contact_messages.manage'))
+                    <a class="side-link {{ request()->routeIs('admin.contact-messages.*') ? 'is-active' : '' }}" href="{{ route('admin.contact-messages.index') }}" @if (request()->routeIs('admin.contact-messages.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">✉</span>
+                        <span>{{ __('admin.contact_messages.navigation') }}</span>
+                    </a>
+                @endif
             </nav>
 
             <a class="storefront-link" href="{{ url('/') }}" target="_blank" rel="noopener noreferrer">

@@ -5,10 +5,10 @@
 @section('content')
     <section class="page-heading admin-page-heading">
         <div><p class="eyebrow">{{ __('admin.homepage.eyebrow') }}</p><h1>{{ __('admin.homepage.title') }}</h1><p class="text-body-secondary mb-0">{{ __('admin.homepage.description') }}</p></div>
-        <div class="admin-heading-actions"><a class="btn btn-outline-secondary" href="{{ route('admin.homepage.collections') }}">{{ __('admin.homepage.manage_collections') }}</a><a class="btn btn-primary primary-button" href="{{ route('admin.homepage.banners.create') }}">{{ __('admin.homepage.add_banner') }}</a></div>
+        <div class="admin-heading-actions"><a class="btn btn-outline-secondary" href="{{ route('admin.homepage.collections') }}">{{ __('admin.homepage.manage_collections') }}</a>@if($testimonialSection)<a class="btn btn-primary primary-button" href="{{ route('admin.homepage.testimonials.create') }}">{{ __('admin.homepage.testimonials.add') }}</a>@endif<a class="btn btn-primary primary-button" href="{{ route('admin.homepage.banners.create') }}">{{ __('admin.homepage.add_banner') }}</a></div>
     </section>
 
-    @if ($sections->isEmpty())<form method="POST" action="{{ route('admin.homepage.initialize') }}" class="alert alert-info d-flex align-items-center justify-content-between gap-3 flex-wrap">@csrf<span>{{ __('admin.homepage.defaults_help') }}</span><button class="btn btn-primary primary-button" type="submit">{{ __('admin.homepage.initialize') }}</button></form>@endif
+    @if ($sections->isEmpty() || ! $testimonialSection)<form method="POST" action="{{ route('admin.homepage.initialize') }}" class="alert alert-info d-flex align-items-center justify-content-between gap-3 flex-wrap">@csrf<span>{{ __('admin.homepage.defaults_help') }}</span><button class="btn btn-primary primary-button" type="submit">{{ __('admin.homepage.initialize') }}</button></form>@endif
 
     <section class="card panel customer-list-panel mb-4">
         <div class="panel-heading"><div><p class="eyebrow">{{ __('admin.homepage.sections') }}</p><h2>{{ __('admin.homepage.sections') }}</h2></div></div>
@@ -23,6 +23,16 @@
             </tbody></table></div>
             @if ($sections->isNotEmpty())<div class="p-3"><button class="btn btn-primary primary-button" type="submit">{{ __('admin.homepage.save_sections') }}</button></div>@endif
         </form>
+    </section>
+
+    <section class="card panel customer-list-panel mb-4">
+        <div class="panel-heading"><div><p class="eyebrow">{{ __('admin.homepage.testimonials.eyebrow') }}</p><h2>{{ __('admin.homepage.testimonials.title') }}</h2><p class="text-body-secondary mb-0">{{ __('admin.homepage.testimonials.description') }}</p></div><span class="panel-count">{{ $testimonials->count() }}</span></div>
+        <div class="table-scroll"><table class="table table-hover align-middle orders-table mb-0"><thead><tr><th>{{ __('admin.homepage.preview') }}</th><th>{{ __('admin.homepage.testimonials.name') }}</th><th>{{ __('admin.homepage.testimonials.message') }}</th><th>{{ __('admin.homepage.sort_order') }}</th><th>{{ __('admin.homepage.visible') }}</th><th></th></tr></thead><tbody>
+            @forelse ($testimonials as $testimonial)
+                @php($translation = $testimonial['translations'][app()->getLocale()] ?? $testimonial['translations']['en'] ?? [])
+                <tr><td><img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($testimonial['image_path']) }}" alt="" class="rounded-circle" style="width:64px;height:64px;object-fit:cover"></td><td>{{ $translation['name'] ?? '' }}</td><td class="text-truncate" style="max-width:360px">{{ $translation['message'] ?? '' }}</td><td>{{ $testimonial['sort_order'] }}</td><td><span class="badge {{ $testimonial['is_active'] ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $testimonial['is_active'] ? __('admin.homepage.enabled') : __('admin.homepage.hidden') }}</span></td><td class="text-end text-nowrap"><a class="btn btn-sm btn-outline-primary" href="{{ route('admin.homepage.testimonials.edit', $testimonial['id']) }}">{{ __('admin.homepage.edit') }}</a><form method="POST" action="{{ route('admin.homepage.testimonials.destroy', $testimonial['id']) }}" class="d-inline">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger" type="submit" onclick="return confirm(@js(__('admin.homepage.testimonials.confirm_remove')))" aria-label="{{ __('admin.homepage.testimonials.remove') }}">{{ __('admin.homepage.testimonials.remove') }}</button></form></td></tr>
+            @empty<tr><td colspan="6" class="text-center py-4">{{ __('admin.homepage.testimonials.empty') }}</td></tr>@endforelse
+        </tbody></table></div>
     </section>
 
     <section class="card panel customer-list-panel">

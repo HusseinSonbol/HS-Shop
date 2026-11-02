@@ -10,6 +10,7 @@ use App\Models\ProductCollection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class WebsiteContentManagementService
@@ -34,10 +35,11 @@ class WebsiteContentManagementService
             $popularId = ProductCollection::query()->where('code', 'popular')->value('id');
             $sections = [
                 ['home_hero', 'banner_placement', null, 'home_hero', 10, 'Home hero', 'واجهة الهوم'],
-                ['home_new_products', 'product_collection', $newId, null, 20, 'New arrivals', 'وصل حديثًا'],
+                ['home_popular_products', 'product_collection', $popularId, null, 20, 'Popular products', 'الأكثر شيوعًا'],
                 ['home_promo_top', 'banner_placement', null, 'home_promo_top', 30, 'Top promotional banner', 'بانر ترويجي علوي'],
-                ['home_popular_products', 'product_collection', $popularId, null, 40, 'Popular products', 'الأكثر شيوعًا'],
+                ['home_new_products', 'product_collection', $newId, null, 40, 'New arrivals', 'وصل حديثًا'],
                 ['home_promo_middle', 'banner_placement', null, 'home_promo_middle', 50, 'Middle promotional banner', 'بانر ترويجي أوسط'],
+                ['home_testimonials', 'testimonials', null, null, 45, 'Customer stories', 'آراء العملاء'],
             ];
             foreach ($sections as [$code, $type, $collectionId, $placement, $sortOrder, $headingEn, $headingAr]) {
                 $inserted = DB::table('homepage_sections')->insertOrIgnore([
@@ -124,6 +126,89 @@ class WebsiteContentManagementService
     }
 
     /** @param array<string, mixed> $data */
+    /** @param array<string, mixed> $data */
+    public function saveHomepageTestimonial(?string $testimonialId, array $data, int $actorId): void
+    {
+        $newPath = isset($data['image']) && $data['image'] instanceof UploadedFile
+            ? $data['image']->store('homepage-testimonials', 'public')
+            : null;
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile && ! $newPath) {
+            throw new \RuntimeException('Unable to store homepage testimonial image.');
+        }
+
+        $oldPath = null;
+        try {
+            DB::transaction(function () use ($testimonialId, $data, $actorId, $newPath, &$oldPath): void {
+                $section = HomepageSection::query()->where('code', 'home_testimonials')->lockForUpdate()->firstOrFail();
+                $items = $section->settings['testimonials'] ?? [];
+                $index = $testimonialId === null ? null : collect($items)->search(fn ($item) => ($item['id'] ?? null) === $testimonialId);
+                if ($testimonialId !== null && $index === false) {
+                    throw (new \Illuminate\Database\Eloquent\ModelNotFoundException)->setModel(HomepageSection::class, [$section->id]);
+                }
+
+                $before = $testimonialId === null ? null : $items[$index];
+                $oldPath = $before['image_path'] ?? null;
+                $item = [
+                    'id' => $testimonialId ?? (string) Str::uuid(),
+                    'image_path' => $newPath ?? ($before['image_path'] ?? null),
+                    'sort_order' => (int) $data['sort_order'],
+                    'is_active' => (bool) $data['is_active'],
+                    'translations' => [],
+                ];
+                foreach (['ar', 'en'] as $locale) {
+                    $item['translations'][$locale] = [
+                        'name' => trim($data['translations'][$locale]['name']),
+                        'message' => trim($data['translations'][$locale]['message']),
+                    ];
+                }
+
+                if ($testimonialId === null) {
+                    $items[] = $item;
+                } else {
+                    $items[$index] = $item;
+                }
+                $section->settings = array_merge($section->settings ?? [], ['testimonials' => array_values($items)]);
+                $section->updated_by = $actorId;
+                $section->save();
+                $this->log($section, $testimonialId === null ? 'homepage_testimonial.created' : 'homepage_testimonial.updated', $actorId, $before, $item);
+            });
+        } catch (\Throwable $exception) {
+            if ($newPath) {
+                Storage::disk('public')->delete($newPath);
+            }
+            throw $exception;
+        }
+
+        if ($newPath && $oldPath) {
+            Storage::disk('public')->delete($oldPath);
+        }
+    }
+
+    public function removeHomepageTestimonial(string $testimonialId, int $actorId): void
+    {
+        $removedPath = null;
+        DB::transaction(function () use ($testimonialId, $actorId, &$removedPath): void {
+            $section = HomepageSection::query()->where('code', 'home_testimonials')->lockForUpdate()->firstOrFail();
+            $items = $section->settings['testimonials'] ?? [];
+            $index = collect($items)->search(fn ($item) => ($item['id'] ?? null) === $testimonialId);
+            if ($index === false) {
+                throw (new \Illuminate\Database\Eloquent\ModelNotFoundException)->setModel(HomepageSection::class, [$section->id]);
+            }
+
+            $before = $items[$index];
+            $removedPath = $before['image_path'] ?? null;
+            unset($items[$index]);
+            $section->settings = array_merge($section->settings ?? [], ['testimonials' => array_values($items)]);
+            $section->updated_by = $actorId;
+            $section->save();
+            $this->log($section, 'homepage_testimonial.removed', $actorId, $before, null);
+        });
+
+        if ($removedPath) {
+            Storage::disk('public')->delete($removedPath);
+        }
+    }
+
     public function addCollectionProduct(ProductCollection $collection, array $data, int $actorId): void
     {
         DB::transaction(function () use ($collection, $data, $actorId): void {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\BannerRequest;
 use App\Http\Requests\Admin\HomepageSectionOrderRequest;
+use App\Http\Requests\Admin\HomepageTestimonialRequest;
 use App\Http\Requests\Admin\ProductCollectionItemRequest;
 use App\Http\Requests\Admin\ProductCollectionOrderRequest;
 use App\Models\Banner;
@@ -24,7 +25,56 @@ class HomepageContentController extends Controller
             ->orderBy('sort_order')->orderBy('id')->get();
         $banners = Banner::query()->with('translations')->orderBy('placement')->orderBy('sort_order')->orderBy('id')->paginate(20);
 
-        return view('admin.homepage.index', compact('sections', 'banners'));
+        $testimonialSection = $sections->firstWhere('code', 'home_testimonials');
+        $testimonials = collect($testimonialSection?->settings['testimonials'] ?? [])->sortBy('sort_order')->values();
+
+        return view('admin.homepage.index', compact('sections', 'banners', 'testimonials', 'testimonialSection'));
+    }
+
+    public function createTestimonial(): View
+    {
+        return view('admin.homepage.testimonial-form', ['testimonial' => null]);
+    }
+
+    public function editTestimonial(string $testimonialId): View
+    {
+        $testimonial = $this->findTestimonial($testimonialId);
+
+        return view('admin.homepage.testimonial-form', compact('testimonial'));
+    }
+
+    public function storeTestimonial(HomepageTestimonialRequest $request, WebsiteContentManagementService $content): RedirectResponse
+    {
+        $content->saveHomepageTestimonial(null, $request->validated(), (int) $request->user()->id);
+
+        return redirect()->route('admin.homepage.index')->with('status', __('admin.homepage.testimonials.created'));
+    }
+
+    public function updateTestimonial(HomepageTestimonialRequest $request, string $testimonialId, WebsiteContentManagementService $content): RedirectResponse
+    {
+        $this->findTestimonial($testimonialId);
+        $content->saveHomepageTestimonial($testimonialId, $request->validated(), (int) $request->user()->id);
+
+        return redirect()->route('admin.homepage.index')->with('status', __('admin.homepage.testimonials.updated'));
+    }
+
+    public function destroyTestimonial(Request $request, string $testimonialId, WebsiteContentManagementService $content): RedirectResponse
+    {
+        abort_unless($request->user()?->hasPermission('homepage.manage'), 403);
+        $content->removeHomepageTestimonial($testimonialId, (int) $request->user()->id);
+
+        return redirect()->route('admin.homepage.index')->with('status', __('admin.homepage.testimonials.removed'));
+    }
+
+    /** @return array<string, mixed> */
+    private function findTestimonial(string $testimonialId): array
+    {
+        $settings = HomepageSection::query()->where('code', 'home_testimonials')->firstOrFail()->settings ?? [];
+        $items = $settings['testimonials'] ?? [];
+        $testimonial = collect($items)->firstWhere('id', $testimonialId);
+        abort_if(! $testimonial, 404);
+
+        return $testimonial;
     }
 
     public function initializeDefaults(Request $request, WebsiteContentManagementService $content): RedirectResponse
