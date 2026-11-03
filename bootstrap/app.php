@@ -17,7 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.permission' => RequireAdminPermission::class,
         ]);
-        $middleware->redirectGuestsTo(fn () => route('admin.login'));
+        $middleware->redirectGuestsTo(fn (\Illuminate\Http\Request $request) => str_starts_with($request->path(), 'account')
+            ? route('store.account.login')
+            : route('admin.login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

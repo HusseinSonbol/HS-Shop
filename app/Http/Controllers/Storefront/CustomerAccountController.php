@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\User;
 use App\Services\Storefront\FavoriteManagementService;
+use App\Services\Storefront\CartManagementService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +32,7 @@ class CustomerAccountController extends Controller
         ]);
     }
 
-    public function storeLogin(Request $request, FavoriteManagementService $favorites): RedirectResponse
+    public function storeLogin(Request $request, FavoriteManagementService $favorites, CartManagementService $carts): RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email', 'max:190'],
@@ -79,6 +80,9 @@ class CustomerAccountController extends Controller
         $favoriteApplied = $user->customer
             ? $favorites->applyPendingFavorite($request, $user->customer)
             : false;
+        if ($user->customer) {
+            $carts->mergeGuestCartIntoCustomer($request, $user->customer);
+        }
         $response = redirect()->intended(route('store.home'))
             ->with('account_status', __('store.account.logged_in'));
 
@@ -99,12 +103,12 @@ class CustomerAccountController extends Controller
         ]);
     }
 
-    public function storeRegistration(Request $request, FavoriteManagementService $favorites): RedirectResponse
+    public function storeRegistration(Request $request, FavoriteManagementService $favorites, CartManagementService $carts): RedirectResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:160'],
             'email' => ['required', 'string', 'email', 'max:190', 'unique:users,email'],
-            'phone' => ['required', 'string', 'max:32'],
+            'phone' => ['required', 'string', 'max:32', 'regex:/^\\+?[0-9][0-9\\s().-]{6,31}$/'],
             'password' => ['required', 'string', 'min:9', 'max:255', 'confirmed'],
         ], [
             'name.required' => __('store.account.validation.name_required'),
@@ -118,12 +122,14 @@ class CustomerAccountController extends Controller
             'phone.required' => __('store.account.validation.phone_required'),
             'phone.string' => __('store.account.validation.phone_required'),
             'phone.max' => __('store.account.validation.phone_max'),
+            'phone.regex' => __('store.account.validation.phone_invalid'),
             'password.required' => __('store.account.validation.password_required'),
             'password.string' => __('store.account.validation.password_invalid'),
             'password.min' => __('store.account.validation.password_min'),
             'password.max' => __('store.account.validation.password_invalid'),
             'password.confirmed' => __('store.account.validation.password_confirmation'),
         ]);
+        $data['phone'] = $this->normalizePhone($data['phone']);
 
         try {
             $user = DB::transaction(function () use ($data): User {
@@ -158,7 +164,9 @@ class CustomerAccountController extends Controller
 
         Auth::guard('customer')->login($user);
         $request->session()->regenerate();
-        $favoriteApplied = $favorites->applyPendingFavorite($request, $user->customer()->firstOrFail());
+        $customer = $user->customer()->firstOrFail();
+        $favoriteApplied = $favorites->applyPendingFavorite($request, $customer);
+        $carts->mergeGuestCartIntoCustomer($request, $customer);
         $response = redirect()->intended(route('store.home'))
             ->with('account_status', __('store.account.registered'));
 
@@ -174,5 +182,12 @@ class CustomerAccountController extends Controller
         $request->session()->regenerate();
 
         return redirect()->route('store.home')->with('account_status', __('store.account.logged_out'));
+    }
+
+    private function normalizePhone(string $phone): string
+    {
+        return (string) str($phone)
+            ->replace(['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'], ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+            ->trim();
     }
 }
