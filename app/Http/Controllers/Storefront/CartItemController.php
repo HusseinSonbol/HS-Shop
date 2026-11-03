@@ -28,14 +28,10 @@ class CartItemController extends Controller
             404,
         );
 
-        $guestToken = $request->session()->get('hs_shop_guest_cart_token');
-        if (! is_string($guestToken) || ! \Illuminate\Support\Str::isUuid($guestToken)) {
-            $guestToken = $cartManagement->guestToken();
-            $request->session()->put('hs_shop_guest_cart_token', $guestToken);
-        }
+        $cartManagement->addItem($request, $variant, (string) $request->validated('quantity'));
 
-        $cartManagement->addGuestItem($guestToken, $variant, (string) $request->validated('quantity'));
-
-        return back()->with('cart_status', __('store.cart.added'));
+        return back()
+            ->with('cart_status', __('store.cart.added'))
+            ->with('cart_badge_animate', true);
     }
 }

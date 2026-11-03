@@ -3,10 +3,17 @@
 namespace App\View\Composers;
 
 use App\Models\Category;
+use App\Services\Storefront\CartManagementService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class StorefrontNavigationComposer
 {
+    public function __construct(
+        private readonly CartManagementService $carts,
+        private readonly Request $request,
+    ) {}
+
     public function compose(View $view): void
     {
         $locale = app()->getLocale();
@@ -36,5 +43,6 @@ class StorefrontNavigationComposer
             ->whereNull('parent_id')
             ->map(fn (Category $category) => $prepareNode($category))
             ->values());
+        $view->with('cartItemCount', $this->carts->itemCount($this->request));
     }
 }

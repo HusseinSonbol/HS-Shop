@@ -12,13 +12,20 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSupplierController;
 use App\Http\Controllers\Admin\ReviewModerationController;
 use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\ShippingRateController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Storefront\HomeController;
+use App\Http\Controllers\Storefront\AboutController;
 use App\Http\Controllers\Storefront\ContactMessageController as StorefrontContactMessageController;
 use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
 use App\Http\Controllers\Storefront\CartItemController as StorefrontCartItemController;
+use App\Http\Controllers\Storefront\CartController as StorefrontCartController;
+use App\Http\Controllers\Storefront\CheckoutController as StorefrontCheckoutController;
+use App\Http\Controllers\Storefront\WebsiteOrderController;
+use App\Http\Controllers\Storefront\CustomerOrderController;
 use App\Http\Controllers\Storefront\CustomerAccountController;
+use App\Http\Controllers\Storefront\CustomerProfileController;
 use App\Http\Controllers\Storefront\ProductFavoriteController;
 use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryController;
 use Illuminate\Support\Facades\Route;
@@ -30,9 +37,31 @@ Route::get('/category.html', [StorefrontCategoryController::class, 'index']);
 Route::get('/category/{slug?}', [StorefrontCategoryController::class, 'index'])->name('store.category');
 Route::view('/product-v2.html', 'storefront.product-v2');
 Route::get('/product/{slug?}', [StorefrontProductController::class, 'show'])->name('store.product');
+Route::get('/cart', [StorefrontCartController::class, 'index'])->name('store.cart.index');
 Route::post('/cart/items', [StorefrontCartItemController::class, 'store'])
     ->middleware('throttle:30,1')
     ->name('store.cart.items.store');
+Route::patch('/cart/items/{cartItem}', [StorefrontCartController::class, 'update'])
+    ->whereNumber('cartItem')
+    ->middleware('throttle:30,1')
+    ->name('store.cart.items.update');
+Route::delete('/cart/items/{cartItem}', [StorefrontCartController::class, 'destroy'])
+    ->whereNumber('cartItem')
+    ->middleware('throttle:30,1')
+    ->name('store.cart.items.destroy');
+Route::get('/checkout', [StorefrontCheckoutController::class, 'show'])->name('store.checkout');
+Route::middleware('auth:customer')->group(function (): void {
+    Route::get('/account/orders', [CustomerOrderController::class, 'index'])->name('store.account.orders.index');
+    Route::get('/account/orders/{publicId}', [CustomerOrderController::class, 'show'])
+        ->where('publicId', '[0-9a-fA-F-]{36}')
+        ->name('store.account.orders.show');
+    Route::post('/checkout/place-order', [WebsiteOrderController::class, 'place'])
+        ->middleware('throttle:10,1')
+        ->name('store.checkout.place');
+    Route::get('/orders/{publicId}/confirmation', [WebsiteOrderController::class, 'confirmation'])
+        ->where('publicId', '[0-9a-fA-F-]{36}')
+        ->name('store.orders.confirmation');
+});
 Route::get('/account/login', [CustomerAccountController::class, 'createLogin'])->name('store.account.login');
 Route::post('/account/login', [CustomerAccountController::class, 'storeLogin'])
     ->middleware('throttle:10,1')
@@ -41,12 +70,21 @@ Route::get('/account/register', [CustomerAccountController::class, 'createRegist
 Route::post('/account/register', [CustomerAccountController::class, 'storeRegistration'])
     ->middleware('throttle:5,10')
     ->name('store.account.register.store');
+Route::middleware('auth:customer')->prefix('account')->name('store.account.')->group(function (): void {
+    Route::get('/', [CustomerProfileController::class, 'index'])->name('index');
+    Route::patch('/profile', [CustomerProfileController::class, 'updateProfile'])->middleware('throttle:20,1')->name('profile.update');
+    Route::get('/addresses/create', [CustomerProfileController::class, 'createAddress'])->name('addresses.create');
+    Route::post('/addresses', [CustomerProfileController::class, 'storeAddress'])->middleware('throttle:20,1')->name('addresses.store');
+    Route::get('/addresses/{address}/edit', [CustomerProfileController::class, 'editAddress'])->whereNumber('address')->name('addresses.edit');
+    Route::put('/addresses/{address}', [CustomerProfileController::class, 'updateAddress'])->whereNumber('address')->middleware('throttle:20,1')->name('addresses.update');
+    Route::delete('/addresses/{address}', [CustomerProfileController::class, 'archiveAddress'])->whereNumber('address')->middleware('throttle:20,1')->name('addresses.archive');
+});
 Route::post('/account/logout', [CustomerAccountController::class, 'destroy'])->name('store.account.logout');
 Route::post('/product/{product:slug}/favorite', [ProductFavoriteController::class, 'update'])
     ->middleware('throttle:30,1')
     ->name('store.favorites.update');
-Route::view('/about-us', 'storefront.about-us-4')->name('store.about');
-Route::view('/about-us-4.html', 'storefront.about-us-4');
+Route::get('/about-us', AboutController::class)->name('store.about');
+Route::get('/about-us-4.html', AboutController::class);
 
 Route::post('/contact-messages', [StorefrontContactMessageController::class, 'store'])
     ->middleware('throttle:5,1')
@@ -72,6 +110,11 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::get('/', [AdminContactMessageController::class, 'index'])->name('index');
         Route::get('/{contactMessage}', [AdminContactMessageController::class, 'show'])->whereNumber('contactMessage')->name('show');
         Route::patch('/{contactMessage}/status', [AdminContactMessageController::class, 'updateStatus'])->whereNumber('contactMessage')->name('status');
+    });
+
+    Route::middleware(['auth', 'admin.permission:settings.manage'])->prefix('settings')->name('settings.')->group(function (): void {
+        Route::get('/shipping-rates', [ShippingRateController::class, 'edit'])->name('shipping-rates.edit');
+        Route::put('/shipping-rates', [ShippingRateController::class, 'update'])->middleware('throttle:20,1')->name('shipping-rates.update');
     });
 
     Route::middleware(['auth', 'admin.permission:users.manage'])->group(function (): void {

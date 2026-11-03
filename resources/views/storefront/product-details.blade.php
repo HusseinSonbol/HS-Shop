@@ -26,16 +26,6 @@
 
     <div class="hs-product-detail-page" data-product-detail>
         <div class="container hs-shell">
-            @if (session('cart_status'))
-                <div class="alert alert-success hs-product-cart-alert" role="status">{{ session('cart_status') }}</div>
-            @endif
-            @if (session('favorite_status'))
-                <div class="alert alert-success hs-product-cart-alert" role="status">{{ session('favorite_status') }}</div>
-            @endif
-            @if (session('account_status'))
-                <div class="alert alert-success hs-product-cart-alert" role="status">{{ session('account_status') }}</div>
-            @endif
-
             <section class="row g-4 g-xl-5 hs-product-detail" aria-label="{{ $product->display_name }}">
                 <div class="col-lg-6">
                     <div class="hs-product-gallery">
@@ -115,7 +105,7 @@
                             <div class="hs-product-purchase-actions">
                                 <label class="hs-product-quantity" for="product-quantity">
                                     <span>{{ __('store.product_detail.quantity') }}</span>
-                                    <input id="product-quantity" type="number" name="quantity" min="0.001" step="0.001" value="{{ old('quantity', '1') }}" inputmode="decimal" required>
+                                    <input id="product-quantity" type="number" name="quantity" min="1" step="1" value="{{ old('quantity', '1') }}" inputmode="numeric" required>
                                 </label>
                                 <button class="btn hs-button hs-button-dark hs-product-add-button" type="submit" @disabled(! $selectedVariant)>
                                     {{ __('store.product_detail.add_to_cart') }}

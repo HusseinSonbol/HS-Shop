@@ -154,6 +154,11 @@ class ProductController extends Controller
                 });
         }
 
+        $relatedFavoriteIds = $customer && $relatedProducts->isNotEmpty()
+            ? $customer->favorites()->whereIn('products.id', $relatedProducts->pluck('id'))->pluck('products.id')->flip()
+            : collect();
+        $relatedProducts->each(fn (Product $related) => $related->setAttribute('is_favorite', $relatedFavoriteIds->has($related->id)));
+
         $variantOptions = $product->variants->map(fn (ProductVariant $variant) => [
             'id' => $variant->id,
             'sku' => $variant->sku,

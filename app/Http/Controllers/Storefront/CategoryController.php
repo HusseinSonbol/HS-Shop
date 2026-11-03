@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
@@ -83,6 +84,11 @@ class CategoryController extends Controller
 
         $products = $productsQuery->paginate(12)->withQueryString();
         $products->getCollection()->transform(fn (Product $product) => $this->prepareProduct($product, $locale));
+        $customer = Auth::guard('customer')->user()?->customer;
+        $favoriteIds = $customer && $products->isNotEmpty()
+            ? $customer->favorites()->whereIn('products.id', $products->getCollection()->pluck('id'))->pluck('products.id')->flip()
+            : collect();
+        $products->getCollection()->each(fn (Product $product) => $product->setAttribute('is_favorite', $favoriteIds->has($product->id)));
 
         return view('storefront.category', [
             'locale' => $locale,

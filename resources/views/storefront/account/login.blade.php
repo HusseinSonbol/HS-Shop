@@ -10,13 +10,6 @@
                 <h1>{{ __('store.account.login_title') }}</h1>
                 <p class="hs-account-intro">{{ __('store.account.login_description') }}</p>
 
-                @if (session('account_notice'))
-                    <div class="alert alert-info" role="status">{{ session('account_notice') }}</div>
-                @endif
-                @if (session('account_status'))
-                    <div class="alert alert-success" role="status">{{ session('account_status') }}</div>
-                @endif
-
                 <form method="POST" action="{{ route('store.account.login.store') }}" class="hs-account-form">
                     @csrf
                     <div class="mb-3">

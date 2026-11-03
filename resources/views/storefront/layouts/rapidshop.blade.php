@@ -21,6 +21,7 @@
     @include('storefront.partials.rapidshop-header')
 
     <main id="main-content">
+        @include('storefront.partials.flash-messages')
         @yield('content')
     </main>
 

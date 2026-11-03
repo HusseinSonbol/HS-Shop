@@ -13,6 +13,7 @@ use App\Models\ProductReview;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
@@ -70,6 +71,13 @@ class HomeController extends Controller
         $popularProducts = $popularSection?->collection
             ? $this->productsFromCollection($popularSection->collection, $locale)
             : collect();
+
+        $storeProducts = $newProducts->merge($popularProducts)->unique('id');
+        $customer = Auth::guard('customer')->user()?->customer;
+        $favoriteIds = $customer && $storeProducts->isNotEmpty()
+            ? $customer->favorites()->whereIn('products.id', $storeProducts->pluck('id'))->pluck('products.id')->flip()
+            : collect();
+        $storeProducts->each(fn (Product $product) => $product->setAttribute('is_favorite', $favoriteIds->has($product->id)));
 
         $showNewProducts = $newSection?->is_enabled && $newProducts->isNotEmpty();
         $showPopularProducts = $popularSection?->is_enabled && $popularProducts->isNotEmpty();

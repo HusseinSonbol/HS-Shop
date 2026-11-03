@@ -22,7 +22,7 @@ class AddCartItemRequest extends FormRequest
                     ->where('is_active', true)
                     ->whereNull('deleted_at')),
             ],
-            'quantity' => ['required', 'numeric', 'gt:0', 'decimal:0,3', 'regex:/^\d{1,15}(?:\.\d{1,3})?$/'],
+            'quantity' => ['required', 'integer', 'gt:0', 'regex:/^\d{1,15}$/'],
         ];
     }
 
@@ -32,10 +32,9 @@ class AddCartItemRequest extends FormRequest
             'variant_id.required' => __('store.cart.validation.variant_required'),
             'variant_id.exists' => __('store.cart.validation.variant_invalid'),
             'quantity.required' => __('store.cart.validation.quantity_required'),
-            'quantity.numeric' => __('store.cart.validation.quantity_invalid'),
+            'quantity.integer' => __('store.cart.validation.quantity_invalid'),
             'quantity.gt' => __('store.cart.validation.quantity_invalid'),
             'quantity.regex' => __('store.cart.validation.quantity_max'),
-            'quantity.decimal' => __('store.cart.validation.quantity_precision'),
         ];
     }
 }

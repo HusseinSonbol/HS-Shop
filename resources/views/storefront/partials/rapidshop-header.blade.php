@@ -60,6 +60,9 @@
 
             <div class="hs-header-actions d-flex align-items-center gap-2">
                 @if (auth('customer')->check())
+                    <a class="hs-icon-link" href="{{ route('store.account.index') }}" aria-label="{{ __('store.customer_account.title') }}" title="{{ __('store.customer_account.title') }}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+                    </a>
                     <form method="POST" action="{{ route('store.account.logout') }}" class="m-0">
                         @csrf
                         <button class="hs-icon-link hs-account-header-button" type="submit" aria-label="{{ __('store.account.logout_action') }}" title="{{ __('store.account.logout_action') }}">
@@ -71,8 +74,12 @@
                         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
                     </a>
                 @endif
-                <a class="hs-icon-link" href="{{ route('store.shop') }}" aria-label="{{ __('store.navigation.shop') }}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+                @php($cartBadgeCount = strlen(explode('.', $cartItemCount)[0]) > 2 ? '99+' : $cartItemCount)
+                <a class="hs-icon-link hs-cart-header-link" href="{{ route('store.cart.index') }}" aria-label="{{ __('store.cart.items_count', ['count' => $cartItemCount]) }}" title="{{ __('store.cart.items_count', ['count' => $cartItemCount]) }}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 11.2a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 1.9-1.4L22 8H6"></path><circle cx="10" cy="20" r="1.2"></circle><circle cx="18" cy="20" r="1.2"></circle></svg>
+                    @if ($cartItemCount !== '0')
+                        <span class="hs-cart-count @if (session('cart_badge_animate')) is-animating @endif" aria-hidden="true">{{ $cartBadgeCount }}</span>
+                    @endif
                 </a>
                 <a class="btn hs-button hs-button-dark" href="{{ route('store.shop') }}">{{ __('store.navigation.shop') }}</a>
                 <form method="post" action="{{ route('locale.update', $isRtl ? 'en' : 'ar') }}" class="hs-locale-form d-md-none">
