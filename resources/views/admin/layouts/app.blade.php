@@ -59,6 +59,12 @@
                         <span>{{ __('admin.homepage.navigation') }}</span>
                     </a>
                 @endif
+                @if (auth()->user()->hasPermission('settings.manage'))
+                    <a class="side-link {{ request()->routeIs('admin.settings.*') ? 'is-active' : '' }}" href="{{ route('admin.settings.shipping-rates.edit') }}" @if (request()->routeIs('admin.settings.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">↗</span>
+                        <span>{{ __('admin.shipping_rates.navigation') }}</span>
+                    </a>
+                @endif
                 @if (auth()->user()->hasPermission('faqs.manage'))
                     <a class="side-link {{ request()->routeIs('admin.about-faqs.*') ? 'is-active' : '' }}" href="{{ route('admin.about-faqs.index') }}" @if (request()->routeIs('admin.about-faqs.*')) aria-current="page" @endif>
                         <span class="nav-mark" aria-hidden="true">?</span>
@@ -117,5 +123,6 @@
             </main>
         </div>
     </div>
+    @stack('scripts')
 </body>
 </html>
