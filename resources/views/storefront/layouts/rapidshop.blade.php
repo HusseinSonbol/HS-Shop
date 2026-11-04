@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{{ __('store.footer.description') }}">
     <meta name="theme-color" content="#0B132B">
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/hs-shop-favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/hs-shop-favicon.png') }}">
     <title>@yield('title', __('store.brand'))</title>
     @if ($isRtl)
         @vite('resources/css/admin-bootstrap.rtl.css')

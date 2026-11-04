@@ -22,7 +22,8 @@
     <!-- Favicon
     ============================================ -->
    
-    <link rel="shortcut icon" type="image/png" href="ico/favicon-16x16.png"/>
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/hs-shop-favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/hs-shop-favicon.png') }}">
     
    
     <!-- Libs CSS

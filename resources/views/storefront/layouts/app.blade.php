@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="HS Shop — clothing and home furnishings.">
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/hs-shop-favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/hs-shop-favicon.png') }}">
     <title>@yield('title', 'HS Shop')</title>
     @vite('resources/css/storefront-bootstrap5.css')
 
