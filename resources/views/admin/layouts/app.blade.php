@@ -37,6 +37,18 @@
                         <span>{{ __('admin.customers.navigation') }}</span>
                     </a>
                 @endif
+                @if (auth()->user()->hasPermission('orders.manage'))
+                    <a class="side-link {{ request()->routeIs('admin.orders.*') ? 'is-active' : '' }}" href="{{ route('admin.orders.index') }}" @if (request()->routeIs('admin.orders.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">▤</span>
+                        <span>{{ __('admin.orders.navigation') }}</span>
+                    </a>
+                @endif
+                @if (auth()->user()->hasPermission('shipments.manage'))
+                    <a class="side-link {{ request()->routeIs('admin.shipping-companies.*') ? 'is-active' : '' }}" href="{{ route('admin.shipping-companies.index') }}" @if (request()->routeIs('admin.shipping-companies.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">↗</span>
+                        <span>{{ __('admin.shipping_companies.navigation') }}</span>
+                    </a>
+                @endif
                 @if (auth()->user()->hasPermission('catalog.manage'))
                     <a class="side-link {{ request()->routeIs('admin.products.*') ? 'is-active' : '' }}" href="{{ route('admin.products.index') }}" @if (request()->routeIs('admin.products.*')) aria-current="page" @endif>
                         <span class="nav-mark" aria-hidden="true">▣</span>

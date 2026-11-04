@@ -298,6 +298,9 @@ return [
         'address_unavailable' => 'No saved delivery address details are available for this order.',
         'statuses' => [
             'new' => 'New',
+            'confirmed' => 'Confirmed',
+            'shipped' => 'Shipped',
+            'received' => 'Received',
         ],
     ],
     'favorites' => [

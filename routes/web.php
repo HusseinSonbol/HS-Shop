@@ -3,31 +3,34 @@
 use App\Http\Controllers\Admin\AboutFaqController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\CustomerAddressController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
+use App\Http\Controllers\Admin\CustomerAddressController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HomepageContentController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSupplierController;
 use App\Http\Controllers\Admin\ReviewModerationController;
-use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\ShipmentController;
+use App\Http\Controllers\Admin\ShippingCompanyController;
 use App\Http\Controllers\Admin\ShippingRateController;
+use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\LocaleController;
-use App\Http\Controllers\Storefront\HomeController;
 use App\Http\Controllers\Storefront\AboutController;
-use App\Http\Controllers\Storefront\ContactMessageController as StorefrontContactMessageController;
-use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
-use App\Http\Controllers\Storefront\CartItemController as StorefrontCartItemController;
 use App\Http\Controllers\Storefront\CartController as StorefrontCartController;
-use App\Http\Controllers\Storefront\CheckoutController as StorefrontCheckoutController;
-use App\Http\Controllers\Storefront\WebsiteOrderController;
-use App\Http\Controllers\Storefront\CustomerOrderController;
-use App\Http\Controllers\Storefront\CustomerAccountController;
-use App\Http\Controllers\Storefront\CustomerProfileController;
-use App\Http\Controllers\Storefront\ProductFavoriteController;
+use App\Http\Controllers\Storefront\CartItemController as StorefrontCartItemController;
 use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryController;
+use App\Http\Controllers\Storefront\CheckoutController as StorefrontCheckoutController;
+use App\Http\Controllers\Storefront\ContactMessageController as StorefrontContactMessageController;
+use App\Http\Controllers\Storefront\CustomerAccountController;
+use App\Http\Controllers\Storefront\CustomerOrderController;
+use App\Http\Controllers\Storefront\CustomerProfileController;
+use App\Http\Controllers\Storefront\HomeController;
+use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
+use App\Http\Controllers\Storefront\ProductFavoriteController;
+use App\Http\Controllers\Storefront\WebsiteOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('store.home');
@@ -104,6 +107,29 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
 
     Route::middleware(['auth', 'admin.permission:dashboard.access'])->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
+    });
+
+    Route::middleware(['auth', 'admin.permission:orders.manage'])->prefix('orders')->name('orders.')->group(function (): void {
+        Route::get('/', [AdminOrderController::class, 'index'])->name('index');
+        Route::get('/create-social', [AdminOrderController::class, 'createSocial'])->name('create-social');
+        Route::post('/social', [AdminOrderController::class, 'storeSocial'])->middleware('throttle:20,1')->name('store-social');
+        Route::post('/{order}/payment-proofs', [AdminOrderController::class, 'uploadPaymentProof'])
+            ->whereNumber('order')->middleware('throttle:10,1')->name('payment-proofs.store');
+        Route::get('/{order}/payment-proofs/{proof}', [AdminOrderController::class, 'showPaymentProof'])
+            ->whereNumber(['order', 'proof'])->name('payment-proofs.show');
+        Route::post('/{order}/payment-proofs/{proof}/review', [AdminOrderController::class, 'reviewPaymentProof'])
+            ->whereNumber(['order', 'proof'])->middleware('throttle:20,1')->name('payment-proofs.review');
+        Route::get('/{order}', [AdminOrderController::class, 'show'])->whereNumber('order')->name('show');
+        Route::post('/{order}/events', [AdminOrderController::class, 'storeEvent'])->whereNumber('order')->name('events.store');
+    });
+
+    Route::middleware(['auth', 'admin.permission:shipments.manage'])->group(function (): void {
+        Route::get('/shipping-companies', [ShippingCompanyController::class, 'index'])->name('shipping-companies.index');
+        Route::post('/shipping-companies', [ShippingCompanyController::class, 'store'])->name('shipping-companies.store');
+        Route::put('/shipping-companies/{company}', [ShippingCompanyController::class, 'update'])->whereNumber('company')->name('shipping-companies.update');
+        Route::patch('/shipping-companies/{company}/active', [ShippingCompanyController::class, 'toggle'])->whereNumber('company')->name('shipping-companies.active');
+        Route::post('/orders/{order}/shipments', [ShipmentController::class, 'store'])->whereNumber('order')->middleware('throttle:20,1')->name('orders.shipments.store');
+        Route::post('/orders/{order}/shipments/{shipment}/events', [ShipmentController::class, 'storeEvent'])->whereNumber(['order', 'shipment'])->middleware('throttle:30,1')->name('orders.shipments.events.store');
     });
 
     Route::middleware(['auth', 'admin.permission:contact_messages.manage'])->prefix('contact-messages')->name('contact-messages.')->group(function (): void {

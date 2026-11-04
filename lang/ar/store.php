@@ -298,6 +298,10 @@ return [
         'address_unavailable' => 'لا توجد تفاصيل عنوان محفوظة لهذا الطلب.',
         'statuses' => [
             'new' => 'جديد',
+            'confirmed' => 'مؤكد',
+            'shipped' => 'تم الشحن',
+            'received' => 'تم الاستلام',
+            'closed' => 'مغلق',
         ],
     ],
     'favorites' => [
