@@ -486,6 +486,10 @@ html[dir="rtl"] .hs-about-image-mark { right: auto; left: 18px; }
 .hs-account-panel a.hs-button-dark:hover,
 .hs-account-panel a.hs-button-dark:focus,
 .hs-account-panel a.hs-button-dark:active { color: #fff !important; }
+.hs-account-heading a.hs-account-orders-button,
+.hs-account-heading a.hs-account-orders-button:hover,
+.hs-account-heading a.hs-account-orders-button:focus,
+.hs-account-heading a.hs-account-orders-button:active { color: #fff !important; }
 .hs-account-panel h2 { margin: 0 0 20px; color: var(--hs-navy); font-size: 19px; font-weight: 800; }
 .hs-account-address { padding: 17px; background: #fbfaf7; border: 1px solid #ece8df; border-radius: 7px; color: #505765; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
 .hs-account-address h3 { margin: 0 0 5px; color: var(--hs-navy); font-size: 14px; font-weight: 800; }
