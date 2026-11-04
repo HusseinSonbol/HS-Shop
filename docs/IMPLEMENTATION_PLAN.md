@@ -37,14 +37,14 @@ The owner authorized schema implementation and an administrator seeder; the MVP 
 - Allow guests to browse, add to cart and view checkout; preserve cart/checkout choices through registration/login and require authentication only at final order placement. Place authenticated COD orders with immutable product, regular/sale price, charged amount, quantity, shipping and address snapshots.
 - Show regular and optional sale prices in product listings/details, and snapshot both plus the charged price/discount in order revisions. Keep automatic sale scheduling off until its policy is approved.
 - Add customer order history/details and explicit revision/approval handling for changed price/product/quantity.
-- Add order activity events for creation, status changes, follow-up, closure/reopening and reasons.
-- Add manual supplier availability checks, staff-entered social orders, and InstaPay proof capture/review for social channels only.
+- Provide permission-gated order search, detail and immutable event timeline; assignment, notes and follow-up are append-only events. Implement the owner-approved sequential order state machine, failure reasons, customer-receipt confirmation for success, and reopening to the pre-closure status. Payment and shipment states remain independent.
+- **Implemented (S2-06):** Add staff-entered Facebook/Instagram orders with immutable order snapshots, COD or InstaPay, private transfer-proof upload/authorized viewing, accept/reject review, rejection reason, replacement proof after rejection and audit events. InstaPay remains unavailable on website checkout.
 
 **Exit:** website and social orders can be created, followed and closed with durable audit history and no current-catalog mutation of old orders.
 
 ## Phase 4 — Manual fulfillment and financial facts
 
-- Record manual shipment/delivery events and actual carrier costs, including undelivered/return-to-sender legs.
+- **Implemented (S2-07):** Record manual carriers, shipment attempts and delivery events, actual carrier costs, customer shipping allocations, COD expected/actual collection, and shipment timestamps. Shipment events remain independent of order/payment state; carrier settlement and customer liability decisions are deferred.
 - Track return/exchange/damage cases and related refunds or write-offs under approved policy.
 - Record per-order product cost, inbound delivery, packaging, advertising and other approved direct costs; clearly distinguish estimates from actuals.
 
