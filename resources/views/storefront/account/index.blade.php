@@ -10,6 +10,8 @@
                 <h1>{{ __('store.customer_account.title') }}</h1>
                 <p>{{ __('store.customer_account.description') }}</p>
                 <a class="btn hs-button hs-button-dark hs-account-orders-button mt-3" href="{{ route('store.account.orders.index') }}">{{ __('store.customer_orders.title') }}</a>
+                <a class="btn btn-outline-secondary mt-3" href="{{ route('store.account.tickets.index') }}">{{ __('store.tickets.title') }}</a>
+                <a class="btn btn-outline-secondary mt-3" href="{{ route('store.account.notifications.index') }}">{{ __('store.tickets.notifications') }}</a>
             </div>
 
             <div class="row g-4">

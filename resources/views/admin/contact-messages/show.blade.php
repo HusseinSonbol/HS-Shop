@@ -28,6 +28,16 @@
                     <div><label for="status" class="form-label">{{ __('admin.contact_messages.status') }}</label><select id="status" name="status" class="form-select @error('status') is-invalid @enderror" required>@foreach (['read', 'closed', 'spam'] as $status)<option value="{{ $status }}" @selected(old('status', in_array($contactMessage->status, ['read', 'closed', 'spam'], true) ? $contactMessage->status : 'read') === $status)>{{ __('admin.contact_messages.statuses.'.$status) }}</option>@endforeach</select>@error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
                     <button class="btn btn-primary primary-button" type="submit">{{ __('admin.contact_messages.save_status') }}</button>
                 </form>
+                @if (!$contactMessage->converted_ticket_id && auth()->user()->hasPermission('support_tickets.manage'))
+                    <hr>
+                    <form method="POST" action="{{ route('admin.support-tickets.convert-contact', $contactMessage) }}" class="d-grid gap-3">
+                        @csrf
+                        <div><label class="form-label" for="ticket-priority">{{ __('admin.support_tickets.priority') }}</label><select id="ticket-priority" name="priority" class="form-select"><option value="low">{{ __('admin.support_tickets.priorities.low') }}</option><option value="normal" selected>{{ __('admin.support_tickets.priorities.normal') }}</option><option value="high">{{ __('admin.support_tickets.priorities.high') }}</option><option value="urgent">{{ __('admin.support_tickets.priorities.urgent') }}</option></select></div>
+                        <button class="btn btn-primary primary-button" type="submit">{{ __('admin.contact_messages.convert_to_ticket') }}</button>
+                    </form>
+                @elseif($contactMessage->converted_ticket_id)
+                    <a class="btn btn-outline-primary mt-3" href="{{ route('admin.support-tickets.show', $contactMessage->converted_ticket_id) }}">{{ __('admin.contact_messages.open_ticket') }}</a>
+                @endif
             </section>
         </div>
     </div>

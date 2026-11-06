@@ -43,6 +43,12 @@
                         <span>{{ __('admin.orders.navigation') }}</span>
                     </a>
                 @endif
+                @if (auth()->user()->hasPermission('returns.manage'))
+                    <a class="side-link {{ request()->routeIs('admin.returns.*') ? 'is-active' : '' }}" href="{{ route('admin.returns.index') }}" @if (request()->routeIs('admin.returns.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">↩</span>
+                        <span>{{ __('admin.returns.title') }}</span>
+                    </a>
+                @endif
                 @if (auth()->user()->hasPermission('shipments.manage'))
                     <a class="side-link {{ request()->routeIs('admin.shipping-companies.*') ? 'is-active' : '' }}" href="{{ route('admin.shipping-companies.index') }}" @if (request()->routeIs('admin.shipping-companies.*')) aria-current="page" @endif>
                         <span class="nav-mark" aria-hidden="true">↗</span>
@@ -101,6 +107,18 @@
                         <span>{{ __('admin.contact_messages.navigation') }}</span>
                     </a>
                 @endif
+                @if (auth()->user()->hasPermission('support_tickets.manage'))
+                    <a class="side-link {{ request()->routeIs('admin.support-tickets.*') ? 'is-active' : '' }}" href="{{ route('admin.support-tickets.index') }}" @if (request()->routeIs('admin.support-tickets.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">✎</span>
+                        <span>{{ __('admin.support_tickets.navigation') }}</span>
+                    </a>
+                @endif
+                @if (auth()->user()->hasPermission('reports.view'))
+                    <a class="side-link {{ request()->routeIs('admin.reports.*') ? 'is-active' : '' }}" href="{{ route('admin.reports.index') }}" @if (request()->routeIs('admin.reports.*')) aria-current="page" @endif>
+                        <span class="nav-mark" aria-hidden="true">▥</span>
+                        <span>{{ __('admin.reports.navigation') }}</span>
+                    </a>
+                @endif
             </nav>
 
             <a class="storefront-link" href="{{ url('/') }}" target="_blank" rel="noopener noreferrer">
@@ -113,6 +131,11 @@
             <header class="admin-topbar d-flex align-items-center justify-content-between">
                 <div class="topbar-title">{{ __('admin.admin_panel') }}</div>
                 <div class="topbar-actions d-flex align-items-center">
+                    <a class="btn btn-sm btn-outline-secondary position-relative me-2" href="{{ route('admin.notifications.index') }}" aria-label="{{ __('admin.notifications.title') }}">
+                        {{ __('admin.notifications.title') }}
+                        @php($unreadNotificationCount = auth()->user()->unreadNotifications()->count())
+                        @if ($unreadNotificationCount > 0)<span class="badge rounded-pill text-bg-danger">{{ $unreadNotificationCount }}</span>@endif
+                    </a>
                     @include('admin.partials.locale-switcher')
                     <span class="user-name">{{ auth()->user()->name }}</span>
                     <form method="POST" action="{{ route('admin.logout') }}">

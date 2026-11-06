@@ -12,8 +12,8 @@ class ContactMessageController extends Controller
 {
     public function store(ContactMessageRequest $request): RedirectResponse
     {
-        $customerId = $request->user()
-            ? Customer::query()->where('user_id', $request->user()->id)->value('id')
+        $customerId = $request->user('customer')
+            ? Customer::query()->where('user_id', $request->user('customer')->id)->value('id')
             : null;
 
         ContactMessage::query()->create([
