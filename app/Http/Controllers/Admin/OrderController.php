@@ -234,7 +234,7 @@ class OrderController extends Controller
         $nextStatuses = ($record->close_outcome === null && $record->closed_at === null)
             ? (OrderLifecycle::TRANSITIONS[$record->status] ?? [])
             : [];
-        $canCloseOrder = $record->close_outcome === null && $record->status !== 'received';
+        $canCloseOrder = $record->close_outcome === null && ! in_array($record->status, ['received', 'damaged_return'], true);
         $canReopenOrder = $record->close_outcome === 'failure'
             && $lastClosure
             && $lastClosure->event_type === 'closed';
@@ -243,10 +243,17 @@ class OrderController extends Controller
             ->whereHas('roles', fn ($query) => $query->whereIn('roles.code', ['super_admin', 'manager', 'operator']))
             ->orderBy('name')
             ->get(['id', 'name']);
+        $canCreateReturn = $record->status === 'received' && $record->close_outcome === 'success' && auth()->user()->hasPermission('returns.manage');
+        $costEntries = DB::table('order_cost_entries')->leftJoin('users as actors', 'actors.id', '=', 'order_cost_entries.recorded_by')
+            ->where('order_cost_entries.order_id', $order)->orderBy('order_cost_entries.id')
+            ->select('order_cost_entries.*', 'actors.name as actor_name')
+            ->selectRaw('EXISTS(SELECT 1 FROM order_cost_entries AS reversals WHERE reversals.reverses_entry_id = order_cost_entries.id) AS is_reversed')->get();
+        $costItems = DB::table('order_revision_items')->where('order_revision_id', $record->applied_revision_id)->orderBy('line_no')->get(['order_item_id', 'product_name_snapshot', 'sku_snapshot', 'variant_snapshot']);
+        $returnCases = DB::table('returns')->where('order_id', $order)->orderByDesc('id')->get();
 
         return view('admin.orders.show', compact(
             'record', 'revisions', 'shipments', 'events', 'assignedTo', 'staff', 'paymentMethod', 'instapayPayment', 'instapayProofs',
-            'nextStatuses', 'canCloseOrder', 'canReopenOrder', 'lastClosure', 'shipmentCreation',
+            'nextStatuses', 'canCloseOrder', 'canReopenOrder', 'lastClosure', 'shipmentCreation', 'canCreateReturn', 'costEntries', 'returnCases', 'costItems',
         ));
     }
 

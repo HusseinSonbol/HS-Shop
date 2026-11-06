@@ -64,6 +64,7 @@ erDiagram
  SHIPMENTS ||--o{ SHIPMENT_EVENTS : tracked
  SHIPMENTS ||--o{ SHIPMENT_ITEMS : contains
  ORDER_ITEMS ||--o{ SHIPMENT_ITEMS : shipped
+ RETURNS o|--o{ SHIPMENTS : case_legs
  SHIPMENTS ||--o{ CARRIER_SETTLEMENT_ITEMS : settled
  CARRIER_SETTLEMENTS ||--o{ CARRIER_SETTLEMENT_ITEMS : includes
  CARRIER_SETTLEMENTS ||--o{ CARRIER_REMITTANCES : remits
@@ -75,7 +76,7 @@ erDiagram
  ORDERS ||--o{ RETURNS : returned
  RETURNS ||--o{ RETURN_ITEMS : includes
  ORDER_ITEMS ||--o{ RETURN_ITEMS : references
- ORDER_ITEMS ||--o{ RETURN_ITEMS : replacement_for
+ PRODUCT_VARIANTS o|--o{ RETURN_ITEMS : replacement_snapshot
  RETURNS ||--o{ REFUNDS : refunded
  CASH_ACCOUNTS ||--o{ CASH_TRANSACTIONS : posts
  CASH_ACCOUNTS ||--o{ CASH_SESSIONS : session
@@ -123,3 +124,7 @@ erDiagram
 - Payment, order, shipment and return states remain independent. Carrier collection/settlement is separate from customer payment.
 - Lifecycle: catalog and supplier options → per-order-line supplier selection → order/revision approval → manual fulfillment/shipping → collection, return/refund and order costs → reporting.
 - Historical reports use order snapshots, product price history, carrier/shipping facts, returns/refunds and costs; never current catalog prices.
+
+## S2-08 implementation ERD addendum
+
+The nullable returns-to-shipments relationship models pickup and replacement legs on the same original order. Return items reference the returned order line and may also reference a replacement variant; denormalized replacement SKU, product name, variant JSON and quantity preserve the actual outgoing item. The original order revision, order line identity and completed-sale facts stay unchanged. Order cost entries link optionally to a line, shipment and mirrored expense; a self-FK records cost reversals. Refunds link to the original order/payment and return case.

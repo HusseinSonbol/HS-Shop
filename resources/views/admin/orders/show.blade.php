@@ -40,6 +40,16 @@
         @endif
     </section>
 
+    @if ($canCreateReturn || $returnCases->isNotEmpty())
+        <section class="card panel customer-section-panel mb-4">
+            <div class="panel-heading"><div><p class="eyebrow">{{ __('admin.returns.title') }}</p><h2>{{ __('admin.returns.title') }}</h2></div>@if ($canCreateReturn)<a class="btn btn-primary primary-button" href="{{ route('admin.returns.order-create', $record->id) }}">{{ __('admin.returns.create') }}</a>@endif</div>
+            @forelse ($returnCases as $case)
+                <article class="order-operation-record mb-2 d-flex justify-content-between align-items-center flex-wrap gap-2"><div><strong dir="ltr">{{ $case->return_number }}</strong> · {{ __('admin.returns.'.$case->reason_code) }} · <span class="badge text-bg-secondary">{{ __('admin.returns.statuses.'.$case->status) }}</span></div><a class="btn btn-sm btn-outline-secondary secondary-button" href="{{ route('admin.returns.show', $case->id) }}">{{ __('admin.returns.view') }}</a></article>
+            @empty
+            @endforelse
+        </section>
+    @endif
+
     @if ($canCloseOrder || $canReopenOrder)
         <section class="card panel customer-section-panel mb-4 hs-order-closure-panel">
             <div class="panel-heading"><div><p class="eyebrow">{{ __('admin.orders.closure') }}</p><h2>{{ __('admin.orders.close_failure') }}</h2></div></div>
@@ -186,6 +196,23 @@
         @empty<p class="text-secondary mb-0">—</p>@endforelse
     </section>
 
+    @if (auth()->user()->hasPermission('expenses.manage'))
+        <section class="card panel customer-section-panel mb-4">
+            <div class="panel-heading"><div><p class="eyebrow">{{ __('admin.returns.costs') }}</p><h2>{{ __('admin.returns.cost_history') }}</h2></div></div>
+            <form method="POST" action="{{ route('admin.orders.costs.store', $record->id) }}" class="row g-3 align-items-end">@csrf<input type="hidden" name="idempotency_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
+                <div class="col-lg-3"><label class="form-label">{{ __('admin.returns.cost_type') }}</label><select class="form-select" name="cost_type" required>@foreach(['product','packaging','advertising','other'] as $type)<option value="{{ $type }}">{{ __('admin.returns.cost_types.'.$type) }}</option>@endforeach</select></div>
+                <div class="col-lg-3"><label class="form-label">{{ __('admin.returns.product') }}</label><select class="form-select" name="order_item_id"><option value="">—</option>@foreach($costItems as $costItem)@php($costVariant = $costItem->variant_snapshot ? json_decode($costItem->variant_snapshot, true) : [])<option value="{{ $costItem->order_item_id }}">{{ $costItem->product_name_snapshot }} · {{ $costItem->sku_snapshot }} · {{ $costVariant['variant_name'] ?? '' }}</option>@endforeach</select></div>
+                <div class="col-md-2"><label class="form-label">{{ __('admin.returns.basis') }}</label><select class="form-select" name="basis"><option value="actual">{{ __('admin.returns.actual') }}</option><option value="estimate">{{ __('admin.returns.estimate') }}</option></select></div>
+                <div class="col-md-2"><label class="form-label">{{ __('admin.returns.amount') }}</label><input class="form-control" type="number" min="0" step="0.0001" name="amount" required></div>
+                <div class="col-lg-3"><label class="form-label">{{ __('admin.returns.description') }}</label><input class="form-control" name="description" maxlength="255" required></div>
+                <div class="col-md-2"><button class="btn btn-primary primary-button" type="submit">{{ __('admin.returns.save_cost') }}</button></div>
+            </form>
+            <p class="small text-secondary mt-2">{{ __('admin.returns.cost_note') }}</p>
+            <p class="small text-secondary">{{ __('admin.returns.product_cost_note') }}</p>
+            <div class="table-responsive mt-3"><table class="table table-sm align-middle mb-0"><thead><tr><th>{{ __('admin.returns.cost_type') }}</th><th>{{ __('admin.returns.product') }}</th><th>{{ __('admin.returns.basis') }}</th><th>{{ __('admin.returns.amount') }}</th><th>{{ __('admin.returns.description') }}</th><th>{{ __('admin.orders.actor') }}</th><th>{{ __('admin.orders.placed_at') }}</th><th></th></tr></thead><tbody>@forelse($costEntries as $entry)@php($linkedItem = $entry->order_item_id ? $costItems->firstWhere('order_item_id', $entry->order_item_id) : null)<tr><td>{{ __('admin.returns.cost_types.'.$entry->cost_type) }} @if($entry->reverses_entry_id)<small class="d-block text-danger">{{ __('admin.returns.reverse_cost') }} #{{ $entry->reverses_entry_id }}</small>@endif</td><td>{{ $linkedItem?->product_name_snapshot ?: '—' }} @if($linkedItem)<small class="d-block" dir="ltr">{{ $linkedItem->sku_snapshot }}</small>@endif</td><td>{{ __('admin.returns.'.$entry->basis) }}</td><td dir="ltr">{{ $entry->amount }} {{ $entry->currency }}</td><td>{{ $entry->notes }}</td><td>{{ $entry->actor_name ?: '—' }}</td><td dir="ltr">{{ \Illuminate\Support\Carbon::parse($entry->recorded_at)->timezone('Africa/Cairo')->format('Y-m-d H:i') }}</td><td>@if(!$entry->reverses_entry_id && !$entry->is_reversed)<form method="POST" action="{{ route('admin.orders.costs.reverse', [$record->id, $entry->id]) }}" onsubmit="return confirm(@js(__('admin.returns.reverse_cost').' #'.$entry->id))">@csrf<input type="hidden" name="reason" value="{{ __('admin.returns.cost_reverse_reason') }}"><button class="btn btn-sm btn-outline-danger">{{ __('admin.returns.reverse_cost') }}</button></form>@endif</td></tr>@empty<tr><td colspan="8" class="text-secondary">—</td></tr>@endforelse</tbody></table></div>
+        </section>
+    @endif
+
     <section class="card panel customer-section-panel mb-4">
         <div class="panel-heading"><div><p class="eyebrow">{{ __('admin.orders.event_log') }}</p><h2>{{ __('admin.orders.event_log') }}</h2></div></div>
         @forelse ($events as $event)
@@ -200,6 +227,7 @@
                 @elseif ($event->event_type === 'status_changed')<p class="mb-0">{{ __('admin.order_status.'.$event->previous_status) !== 'admin.order_status.'.$event->previous_status ? __('admin.order_status.'.$event->previous_status) : $event->previous_status }} → {{ __('admin.order_status.'.$event->current_status) !== 'admin.order_status.'.$event->current_status ? __('admin.order_status.'.$event->current_status) : $event->current_status }}@if ($event->close_outcome === 'success') · {{ __('admin.orders.outcomes.success') }}@endif</p>
                 @elseif ($event->event_type === 'closed')<p class="mb-0">{{ __('admin.orders.outcomes.'.$event->close_outcome) }}@if ($event->reason_code) · {{ __('admin.orders.failure_reasons.'.$event->reason_code) }}@endif</p>@if (! empty($details['reason_details']))<small>{{ $details['reason_details'] }}</small>@endif
                 @elseif ($event->event_type === 'payment_proof_reviewed')<p class="mb-0">{{ __('admin.social_orders.statuses.'.$details['decision']) }}@if (! empty($details['reason'])) · {{ $details['reason'] }}@endif</p>
+                @elseif (in_array($event->event_type, ['damaged_return_opened', 'return_status_changed', 'damaged_return_closed'], true))<p class="mb-0">@if (! empty($details['status'])){{ __('admin.returns.statuses.'.$details['status']) }}@elseif (! empty($details['resolution'])){{ __('admin.returns.resolutions.'.$details['resolution']) }}@else{{ __('admin.returns.title') }}@endif @if (! empty($details['return_id']))· <a href="{{ route('admin.returns.show', $details['return_id']) }}">{{ __('admin.returns.view') }}</a>@endif</p>
                 @elseif ($event->event_type === 'reopened')<p class="mb-0">{{ __('admin.orders.reopen_restores', ['status' => __('admin.order_status.'.$event->current_status)]) }}</p>@endif
             </article>
         @empty<p class="text-secondary mb-0">—</p>@endforelse

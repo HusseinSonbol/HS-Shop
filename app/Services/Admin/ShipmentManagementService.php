@@ -11,6 +11,8 @@ use Illuminate\Validation\ValidationException;
 
 class ShipmentManagementService
 {
+    public function __construct(private readonly OrderCostLedgerService $costLedger) {}
+
     /** @return array<string, mixed> */
     public function creationContext(int $orderId): array
     {
@@ -140,6 +142,7 @@ class ShipmentManagementService
                 'actor_user_id' => $actor->id,
                 'created_at' => $now,
             ]);
+            $this->costLedger->syncShipmentActual($orderId, $shipmentId, $actor->id, 'carrier_shipping', $this->nullableTrim($data['carrier_cost_actual'] ?? null));
             $this->logActivity($actor->id, $orderId, $shipmentId, 'shipment.created', null, [
                 'shipment_number' => DB::table('shipments')->where('id', $shipmentId)->value('shipment_number'),
                 'shipping_company' => $company->name,
@@ -201,6 +204,9 @@ class ShipmentManagementService
                 'delivered_at' => $deliveredAt,
                 'updated_at' => now(),
             ]);
+            if ((string) ($carrierCost ?? '') !== (string) ($shipment->carrier_cost_actual ?? '')) {
+                $this->costLedger->syncShipmentActual($orderId, $shipmentId, $actor->id, 'carrier_shipping', $carrierCost);
+            }
 
             $details = [
                 'previous_status' => $shipment->status,
