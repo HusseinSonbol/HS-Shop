@@ -13,13 +13,16 @@ class LocaleController extends Controller
     {
         validator(['locale' => $locale], [
             'locale' => ['required', Rule::in(['ar', 'en'])],
+        ], [
+            'locale.required' => __('admin.locale.invalid'),
+            'locale.in' => __('admin.locale.invalid'),
         ])->validate();
 
         $request->session()->put('locale', $locale);
         $request->user()?->forceFill(['preferred_locale' => $locale])->save();
 
         $previousUrl = URL::previous();
-        if ($this->isSameOriginStorefrontUrl($previousUrl, $request)) {
+        if ($this->isSafeSameOriginUrl($previousUrl, $request)) {
             return redirect()->to($previousUrl);
         }
 
@@ -28,7 +31,7 @@ class LocaleController extends Controller
         );
     }
 
-    private function isSameOriginStorefrontUrl(string $url, Request $request): bool
+    private function isSafeSameOriginUrl(string $url, Request $request): bool
     {
         $target = parse_url($url);
         if (! is_array($target) || ! isset($target['scheme'], $target['host'], $target['path'])) {
@@ -40,8 +43,11 @@ class LocaleController extends Controller
             && strtolower($target['scheme']) === strtolower($current['scheme'])
             && strtolower($target['host']) === strtolower($current['host'])
             && ($target['port'] ?? null) === ($current['port'] ?? null);
-        $isStorefrontPath = ! str_starts_with($target['path'], '/admin');
+        $path = $target['path'];
+        $isSafeLocalPath = str_starts_with($path, '/')
+            && ! str_starts_with($path, '//')
+            && ! str_contains($path, '\\');
 
-        return $sameOrigin && $isStorefrontPath;
+        return $sameOrigin && $isSafeLocalPath;
     }
 }

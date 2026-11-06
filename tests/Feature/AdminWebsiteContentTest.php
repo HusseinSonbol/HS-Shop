@@ -32,7 +32,7 @@ class AdminWebsiteContentTest extends TestCase
         $this->actingAs($manager)->get(route('admin.homepage.index'))->assertOk()->assertSee(__('admin.homepage.defaults_help'));
         $this->post(route('admin.homepage.initialize'))->assertRedirect(route('admin.homepage.index'));
         $this->assertDatabaseCount('product_collections', 2);
-        $this->assertDatabaseCount('homepage_sections', 5);
+        $this->assertDatabaseCount('homepage_sections', 6);
         $sections = DB::table('homepage_sections')->orderBy('id')->get();
         $payload = ['sections' => $sections->map(fn ($section, $index) => [
             'id' => $section->id,

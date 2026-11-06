@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'accepted' => 'يجب الموافقة على حقل :attribute.',
+    'array' => 'يجب أن يكون حقل :attribute قائمة.',
+    'boolean' => 'يجب أن تكون قيمة :attribute صحيحة أو خاطئة.',
+    'confirmed' => 'تأكيد :attribute غير مطابق.',
+    'date' => 'تاريخ :attribute غير صحيح.',
+    'date_format' => 'يجب أن يطابق :attribute التنسيق :format.',
+    'email' => 'يجب إدخال بريد إلكتروني صحيح في حقل :attribute.',
+    'exists' => 'القيمة المحددة في :attribute غير صحيحة.',
+    'file' => 'يجب أن يكون :attribute ملفًا.',
+    'image' => 'يجب أن يكون :attribute صورة.',
+    'in' => 'القيمة المحددة في :attribute غير صحيحة.',
+    'integer' => 'يجب أن يكون :attribute عددًا صحيحًا.',
+    'max' => ['array' => 'يجب ألا يحتوي :attribute على أكثر من :max عناصر.', 'file' => 'يجب ألا يتجاوز حجم ملف :attribute :max كيلوبايت.', 'numeric' => 'يجب ألا تزيد قيمة :attribute عن :max.', 'string' => 'يجب ألا يزيد :attribute عن :max حرفًا.'],
+    'mimes' => 'يجب أن يكون ملف :attribute من الأنواع التالية: :values.',
+    'min' => ['array' => 'يجب أن يحتوي :attribute على :min عناصر على الأقل.', 'file' => 'يجب ألا يقل حجم ملف :attribute عن :min كيلوبايت.', 'numeric' => 'يجب ألا تقل قيمة :attribute عن :min.', 'string' => 'يجب ألا يقل :attribute عن :min أحرف.'],
+    'numeric' => 'يجب أن يكون :attribute رقمًا.',
+    'regex' => 'تنسيق :attribute غير صحيح.',
+    'required' => 'حقل :attribute مطلوب.',
+    'string' => 'يجب أن يكون :attribute نصًا.',
+    'unique' => 'قيمة :attribute مستخدمة بالفعل.',
+    'url' => 'يجب أن يكون :attribute رابطًا صحيحًا.',
+    'attributes' => ['email' => 'البريد الإلكتروني', 'name' => 'الاسم', 'password' => 'كلمة المرور', 'phone' => 'رقم الهاتف', 'reason' => 'السبب'],
+];

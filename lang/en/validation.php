@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'accepted' => 'The :attribute field must be accepted.',
+    'array' => 'The :attribute field must be an array.',
+    'boolean' => 'The :attribute field must be true or false.',
+    'confirmed' => 'The :attribute confirmation does not match.',
+    'date' => 'The :attribute field must be a valid date.',
+    'date_format' => 'The :attribute field must match the format :format.',
+    'email' => 'The :attribute field must be a valid email address.',
+    'exists' => 'The selected :attribute is invalid.',
+    'file' => 'The :attribute field must be a file.',
+    'image' => 'The :attribute field must be an image.',
+    'in' => 'The selected :attribute is invalid.',
+    'integer' => 'The :attribute field must be an integer.',
+    'max' => ['array' => 'The :attribute field must not contain more than :max items.', 'file' => 'The :attribute file must not be greater than :max kilobytes.', 'numeric' => 'The :attribute field must not be greater than :max.', 'string' => 'The :attribute field must not be greater than :max characters.'],
+    'mimes' => 'The :attribute field must be a file of type: :values.',
+    'min' => ['array' => 'The :attribute field must contain at least :min items.', 'file' => 'The :attribute file must be at least :min kilobytes.', 'numeric' => 'The :attribute field must be at least :min.', 'string' => 'The :attribute field must be at least :min characters.'],
+    'numeric' => 'The :attribute field must be a number.',
+    'regex' => 'The :attribute field format is invalid.',
+    'required' => 'The :attribute field is required.',
+    'string' => 'The :attribute field must be a string.',
+    'unique' => 'The :attribute has already been taken.',
+    'url' => 'The :attribute field must be a valid URL.',
+    'attributes' => ['email' => 'email address', 'name' => 'name', 'password' => 'password', 'phone' => 'phone number', 'reason' => 'reason'],
+];

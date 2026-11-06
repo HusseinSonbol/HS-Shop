@@ -123,6 +123,16 @@ class AdminAccessTest extends TestCase
             ->assertDontSee(route('admin.categories.index'));
     }
 
+    public function test_locale_switcher_rejects_an_external_referer(): void
+    {
+        $user = $this->createAdmin();
+
+        $this->actingAs($user)
+            ->from('https://attacker.example/redirect')
+            ->post(route('locale.update', 'en'))
+            ->assertRedirect(route('admin.dashboard'));
+    }
+
     public function test_logout_is_post_only_and_invalidates_authenticated_session(): void
     {
         $user = $this->createAdmin();
