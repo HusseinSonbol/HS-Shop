@@ -11,8 +11,9 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -115,13 +116,31 @@ class ProductController extends Controller
             ->where('product_id', $product->id)
             ->where('moderation_status', 'approved')
             ->where('visibility_status', 'visible')
-            ->whereNotNull('comment')
-            ->where('comment', '<>', '')
             ->latest('reviewed_at')
             ->limit(12)
-            ->get(['id', 'comment', 'reviewed_at']);
+            ->get(['id', 'rating', 'comment', 'reviewed_at']);
 
         $customer = Auth::guard('customer')->user()?->customer;
+        $reviewableOrderItems = $customer
+            ? DB::table('order_items')
+                ->join('orders', 'orders.id', '=', 'order_items.order_id')
+                ->join('order_revision_items', function ($join): void {
+                    $join->on('order_revision_items.order_item_id', '=', 'order_items.id')
+                        ->on('order_revision_items.order_revision_id', '=', 'orders.applied_revision_id');
+                })
+                ->join('products', 'products.id', '=', 'order_revision_items.product_id')
+                ->where('orders.customer_id', $customer->id)
+                ->where('orders.status', 'received')
+                ->where('orders.close_outcome', 'success')
+                ->where('products.id', $product->id)
+                ->whereNotExists(fn ($query) => $query->selectRaw('1')->from('product_reviews')->whereColumn('product_reviews.order_item_id', 'order_items.id'))
+                ->orderByDesc('orders.placed_at')
+                ->limit(20)
+                ->get([
+                    'order_items.id as order_item_id', 'orders.order_number',
+                    'order_revision_items.product_name_snapshot', 'order_revision_items.variant_snapshot',
+                ])
+            : collect();
         $isFavorite = $customer?->favorites()->whereKey($product->id)->exists() ?? false;
 
         $relatedProducts = collect();
@@ -183,6 +202,7 @@ class ProductController extends Controller
             'attributeGroups' => $attributeGroups,
             'variantOptions' => $variantOptions,
             'reviews' => $reviews,
+            'reviewableOrderItems' => $reviewableOrderItems,
             'isFavorite' => $isFavorite,
             'relatedProducts' => $relatedProducts,
         ]);

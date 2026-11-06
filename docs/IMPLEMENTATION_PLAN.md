@@ -26,7 +26,7 @@ The owner authorized schema implementation and an administrator seeder; the MVP 
 
 ## Phase 2 — Catalog and storefront
 
-- Convert the selected `emarket/index.html`, `category.html`, `product-v2.html`, and `about-us-4.html` as the chosen alternatives for those page types. Build the other relevant, non-duplicate storefront and account pages available in `emarket/` (including cart, checkout, login/register, account, and order history/details) as needed for approved workflows. Exclude only explicitly deferred features and demo-only controls.
+- **Superseded by owner direction:** the initial eMarket page mapping was replaced with the Rapidshop storefront direction. Active storefront pages use the shared Rapidshop Blade layout and Bootstrap 5; `emarket/` remains a static reference only. Remove old demo routes rather than exposing template sample content.
 - Implement categories, products/variants, images, regular and optional sale prices with history, product-level available/unavailable status, supplier options and per-order supplier choice, simple product Favorites, curated new/popular lists, dashboard-managed homepage sections and imagery (visibility, order and localized headings), About page FAQs, moderated product reviews and general customer feedback.
 - Implement product details, search/category navigation as needed, anonymous cart, and account registration/login.
 
@@ -52,16 +52,17 @@ The owner authorized schema implementation and an administrator seeder; the MVP 
 
 ## Phase 5 — Dashboard operations, support and reporting
 
-- Build dashboard statistics and drill-down lists for today's orders and actionable order/payment/shipping/return/ticket queues.
-- Add separate admin approval/rejection and visibility controls for product ratings/reviews and general customer feedback; add homepage section/banner controls, Contact Us inbox, support tickets, customer-visible replies/internal notes, and stored in-dashboard notifications.
-- Add weekly/monthly/yearly reports using Cairo timezone, day-1 months and Saturday-Friday weeks; label date basis and estimates explicitly.
+- **Implemented (S2-10):** Cairo-day dashboard metrics and permission-scoped order, delivered, failed, return and ticket queues; weekly/monthly/yearly reports with explicit date bases and raw order, direct-cost, return, refund, COD and overhead amounts.
+- **Implemented (S2-09):** Contact Us inbox conversion to support tickets, customer-owned ticket creation/history, public replies, staff-only notes and attachments, assignment/status audit events, and saved in-dashboard notifications. No email/SMS or realtime delivery is enabled.
+- Reporting uses the applied order revision snapshot, separates actual and estimated direct costs, and labels contribution as a provisional estimate. Ratios and accounting profit remain blocked on owner/accountant decisions in `docs/OPEN_DECISIONS.md`.
 
 **Exit:** owner can operate the MVP from the dashboard and inspect sales, returns, damage and cost components with traceable source records.
 
 ## Phase 6 — Release readiness
 
-- Complete workflow/security regression coverage, review upload/download authorization and private storage, and inspect logs for sensitive data exposure.
-- Verify production environment configuration, backups, deployment settings, HTTPS/session settings, and recovery procedures.
+- **Source review (S2-11, 2026-11-06):** admin route groups are permission-gated server-side; customer account/order/address/ticket/notification reads are scoped to the authenticated customer; social payment proofs and support attachments use private storage and authorized download paths. CSRF is provided by Laravel's web middleware, sensitive forms have throttles, uploaded images/documents have MIME/size validation, and checkout/social order/return/cost workflows use transactions and idempotency/locking where implemented. Bilingual safe HTTP error pages and framework validation messages were added, and an unsafe external locale-switch return was rejected.
+- **Still required before production:** run migrations and transactional/concurrency acceptance checks against MySQL, set `APP_ENV=production`, `APP_DEBUG=false`, HTTPS `APP_URL` and `SESSION_SECURE_COOKIE=true`; verify proxy/TLS/security headers; configure database and private/public storage backups and test restore; complete staging acceptance on the owner-approved phone/browser matrix.
+- **Feature blocker:** customers cannot currently submit product ratings/reviews; only staff moderation/visibility routes exist. `docs/OPEN_DECISIONS.md` intentionally blocks this endpoint until rating scale and purchase eligibility are approved. Complete customer acceptance coverage for cart, checkout, reviews and account journeys before marking release ready.
 - Review open decisions and known risks; do not enable deferred integrations without a separate approved scope.
 
 **Exit:** acceptance criteria and relevant checks pass; outstanding limitations are documented before production release.

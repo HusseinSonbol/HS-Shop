@@ -93,12 +93,10 @@ class HomeController extends Controller
         $reviews = ProductReview::query()
             ->where('moderation_status', 'approved')
             ->where('visibility_status', 'visible')
-            ->whereNotNull('comment')
-            ->where('comment', '<>', '')
             ->whereHas('product', fn (Builder $query) => $query
                 ->where('status', 'published')
                 ->where('store_availability_status', 'available'))
-            ->with(['product.translations'])
+            ->with(['product.translations', 'customer'])
             ->latest('reviewed_at')
             ->limit(6)
             ->get();

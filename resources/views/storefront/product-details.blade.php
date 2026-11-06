@@ -173,14 +173,35 @@
                         </dl>
                     </div>
                     <div class="tab-pane fade" id="product-reviews" role="tabpanel" aria-labelledby="product-reviews-tab" tabindex="0">
+                        @if (session('review_status'))<div class="alert alert-success" role="status">{{ session('review_status') }}</div>@endif
+                        @if ($errors->has('order_item_id') || $errors->has('rating') || $errors->has('comment'))
+                            <div class="alert alert-danger" role="alert">{{ $errors->first('order_item_id') ?: ($errors->first('rating') ?: $errors->first('comment')) }}</div>
+                        @endif
                         @forelse ($reviews as $review)
                             <article class="hs-product-review">
                                 <span class="hs-product-review-mark" aria-hidden="true">HS</span>
-                                <div><strong>{{ __('store.reviews.product_review') }}</strong><p>{{ $review->comment }}</p></div>
+                                <div><strong>{{ __('store.reviews.product_review') }}</strong><div class="text-warning" aria-label="{{ __('store.reviews.rating_aria', ['rating' => $review->rating]) }}">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</div>@if($review->comment)<p class="mb-0">{{ $review->comment }}</p>@endif</div>
                             </article>
                         @empty
                             <p class="mb-0">{{ __('store.product_detail.no_reviews') }}</p>
                         @endforelse
+                        <hr class="my-4">
+                        <h3 class="h5">{{ __('store.reviews.write_product_review') }}</h3>
+                        @auth('customer')
+                            @if ($reviewableOrderItems->isNotEmpty())
+                                <form method="POST" action="{{ route('store.product-reviews.store', $product->slug) }}" class="row g-3 mt-1">
+                                    @csrf
+                                    <div class="col-12"><label class="form-label" for="review-order-item">{{ __('store.reviews.eligible_order') }}</label><select class="form-select @error('order_item_id') is-invalid @enderror" name="order_item_id" id="review-order-item" required><option value="">{{ __('store.reviews.choose_order') }}</option>@foreach($reviewableOrderItems as $orderItem)@php($variantLabel = data_get(json_decode((string) $orderItem->variant_snapshot, true), 'name'))<option value="{{ $orderItem->order_item_id }}" @selected(old('order_item_id') == $orderItem->order_item_id)>{{ $orderItem->order_number }} — {{ $orderItem->product_name_snapshot }}@if($variantLabel) · {{ $variantLabel }}@endif</option>@endforeach</select>@error('order_item_id')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+                                    <div class="col-12"><label class="form-label" for="review-rating">{{ __('store.reviews.rating') }}</label><select class="form-select @error('rating') is-invalid @enderror" name="rating" id="review-rating" required><option value="">{{ __('store.reviews.choose_rating') }}</option>@for($rating = 5; $rating >= 1; $rating--)<option value="{{ $rating }}" @selected(old('rating') == $rating)>{{ $rating }} {{ __('store.reviews.stars') }}</option>@endfor</select>@error('rating')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+                                    <div class="col-12"><label class="form-label" for="review-comment">{{ __('store.reviews.comment') }}</label><textarea class="form-control @error('comment') is-invalid @enderror" name="comment" id="review-comment" rows="4" maxlength="2000">{{ old('comment') }}</textarea>@error('comment')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+                                    <div class="col-12"><button class="btn btn-primary primary-button" type="submit">{{ __('store.reviews.submit') }}</button><small class="d-block mt-2 text-body-secondary">{{ __('store.reviews.moderation_note') }}</small></div>
+                                </form>
+                            @else
+                                <p class="mb-0 text-body-secondary">{{ __('store.reviews.no_eligible_order') }}</p>
+                            @endif
+                        @else
+                            <p class="mb-0 text-body-secondary">{{ __('store.reviews.login_to_review') }} <a href="{{ route('store.account.login') }}">{{ __('store.checkout.login_action') }}</a></p>
+                        @endauth
                     </div>
                 </div>
             </section>

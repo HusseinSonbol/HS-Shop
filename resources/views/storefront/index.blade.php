@@ -243,7 +243,8 @@
                         <div class="col-md-6 col-lg-4">
                             <article class="hs-review-card">
                                 <span class="hs-review-quote" aria-hidden="true">“</span>
-                                <p>“{{ $review->comment }}”</p>
+                                <div class="text-warning mb-2" aria-label="{{ __('store.reviews.rating_aria', ['rating' => $review->rating]) }}">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</div>
+                                @if($review->comment)<p>“{{ $review->comment }}”</p>@endif
                                 <span class="hs-review-meta">{{ $reviewProduct ?: __('store.reviews.product_review') }}</span>
                             </article>
                         </div>
@@ -253,7 +254,7 @@
                             <article class="hs-review-card hs-feedback-card">
                                 <span class="hs-review-quote" aria-hidden="true">“</span>
                                 <p>“{{ $item->feedback_text }}”</p>
-                                <span class="hs-review-meta">{{ __('store.reviews.eyebrow') }}</span>
+                                <span class="hs-review-meta">{{ $item->sender_name_snapshot ?: $item->customer?->display_name ?: __('store.reviews.guest_name_fallback') }}</span>
                             </article>
                         </div>
                     @endforeach
@@ -261,6 +262,25 @@
             </div>
         </section>
     @endif
+
+    <section class="hs-section" aria-labelledby="hs-feedback-form-heading">
+        <div class="container hs-shell">
+            <div class="row justify-content-center"><div class="col-lg-8 col-xl-7">
+                <div class="hs-contact-panel">
+                    <div class="hs-contact-heading"><span class="hs-eyebrow">{{ __('store.reviews.eyebrow') }}</span><h2 id="hs-feedback-form-heading">{{ __('store.reviews.feedback_form_title') }}</h2><p>{{ __('store.reviews.feedback_form_note') }}</p></div>
+                    @if(session('feedback_status'))<div class="alert alert-success" role="status">{{ session('feedback_status') }}</div>@endif
+                    <form method="POST" action="{{ route('store.customer-feedback.store') }}" class="row g-3" novalidate>
+                        @csrf
+                        <div class="hs-contact-honeypot" aria-hidden="true"><label for="feedback-website">Website</label><input id="feedback-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+                        <div class="col-md-6"><label class="form-label" for="feedback-name">{{ __('store.reviews.name') }}</label><input class="form-control hs-contact-control @error('sender_name') is-invalid @enderror" id="feedback-name" name="sender_name" value="{{ old('sender_name') }}" maxlength="160" autocomplete="name" required>@error('sender_name')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+                        <div class="col-12"><label class="form-label" for="feedback-text">{{ __('store.reviews.feedback_text') }}</label><textarea class="form-control hs-contact-control @error('feedback_text') is-invalid @enderror" id="feedback-text" name="feedback_text" rows="4" maxlength="3000" required>{{ old('feedback_text') }}</textarea>@error('feedback_text')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+                        @error('website')<div class="col-12 text-danger small">{{ $message }}</div>@enderror
+                        <div class="col-12"><button class="btn hs-button hs-button-dark" type="submit">{{ __('store.reviews.submit_feedback') }}</button><small class="d-block mt-2 text-body-secondary">{{ __('store.reviews.feedback_moderation_note') }}</small></div>
+                    </form>
+                </div>
+            </div></div>
+        </div>
+    </section>
 
     <section class="hs-benefits" aria-label="{{ __('store.benefits.support_title') }}">
         <div class="container hs-shell">

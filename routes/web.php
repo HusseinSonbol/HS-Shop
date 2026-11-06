@@ -8,15 +8,19 @@ use App\Http\Controllers\Admin\CustomerAddressController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HomepageContentController;
+use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSupplierController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\ReturnCaseController;
 use App\Http\Controllers\Admin\ReviewModerationController;
 use App\Http\Controllers\Admin\ShipmentController;
 use App\Http\Controllers\Admin\ShippingCompanyController;
 use App\Http\Controllers\Admin\ShippingRateController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Storefront\AboutController;
 use App\Http\Controllers\Storefront\CartController as StorefrontCartController;
@@ -25,11 +29,15 @@ use App\Http\Controllers\Storefront\CategoryController as StorefrontCategoryCont
 use App\Http\Controllers\Storefront\CheckoutController as StorefrontCheckoutController;
 use App\Http\Controllers\Storefront\ContactMessageController as StorefrontContactMessageController;
 use App\Http\Controllers\Storefront\CustomerAccountController;
+use App\Http\Controllers\Storefront\CustomerFeedbackSubmissionController;
+use App\Http\Controllers\Storefront\CustomerNotificationController;
 use App\Http\Controllers\Storefront\CustomerOrderController;
 use App\Http\Controllers\Storefront\CustomerProfileController;
 use App\Http\Controllers\Storefront\HomeController;
 use App\Http\Controllers\Storefront\ProductController as StorefrontProductController;
 use App\Http\Controllers\Storefront\ProductFavoriteController;
+use App\Http\Controllers\Storefront\ProductReviewSubmissionController;
+use App\Http\Controllers\Storefront\SupportTicketController as StorefrontSupportTicketController;
 use App\Http\Controllers\Storefront\WebsiteOrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -38,8 +46,10 @@ Route::get('/index.html', HomeController::class);
 Route::get('/shop', [StorefrontCategoryController::class, 'index'])->name('store.shop');
 Route::get('/category.html', [StorefrontCategoryController::class, 'index']);
 Route::get('/category/{slug?}', [StorefrontCategoryController::class, 'index'])->name('store.category');
-Route::view('/product-v2.html', 'storefront.product-v2');
 Route::get('/product/{slug?}', [StorefrontProductController::class, 'show'])->name('store.product');
+Route::post('/customer-feedback', [CustomerFeedbackSubmissionController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('store.customer-feedback.store');
 Route::get('/cart', [StorefrontCartController::class, 'index'])->name('store.cart.index');
 Route::post('/cart/items', [StorefrontCartItemController::class, 'store'])
     ->middleware('throttle:30,1')
@@ -54,6 +64,10 @@ Route::delete('/cart/items/{cartItem}', [StorefrontCartController::class, 'destr
     ->name('store.cart.items.destroy');
 Route::get('/checkout', [StorefrontCheckoutController::class, 'show'])->name('store.checkout');
 Route::middleware('auth:customer')->group(function (): void {
+    Route::post('/product/{slug}/reviews', [ProductReviewSubmissionController::class, 'store'])
+        ->where('slug', '[A-Za-z0-9-]+')
+        ->middleware('throttle:5,1')
+        ->name('store.product-reviews.store');
     Route::get('/account/orders', [CustomerOrderController::class, 'index'])->name('store.account.orders.index');
     Route::get('/account/orders/{publicId}', [CustomerOrderController::class, 'show'])
         ->where('publicId', '[0-9a-fA-F-]{36}')
@@ -64,6 +78,14 @@ Route::middleware('auth:customer')->group(function (): void {
     Route::get('/orders/{publicId}/confirmation', [WebsiteOrderController::class, 'confirmation'])
         ->where('publicId', '[0-9a-fA-F-]{36}')
         ->name('store.orders.confirmation');
+    Route::get('/account/tickets', [StorefrontSupportTicketController::class, 'index'])->name('store.account.tickets.index');
+    Route::get('/account/tickets/create', [StorefrontSupportTicketController::class, 'create'])->name('store.account.tickets.create');
+    Route::post('/account/tickets', [StorefrontSupportTicketController::class, 'store'])->middleware('throttle:10,1')->name('store.account.tickets.store');
+    Route::get('/account/tickets/{ticket}', [StorefrontSupportTicketController::class, 'show'])->whereNumber('ticket')->name('store.account.tickets.show');
+    Route::post('/account/tickets/{ticket}/messages', [StorefrontSupportTicketController::class, 'reply'])->whereNumber('ticket')->middleware('throttle:10,1')->name('store.account.tickets.reply');
+    Route::get('/account/tickets/{ticket}/attachments/{attachment}', [StorefrontSupportTicketController::class, 'attachment'])->whereNumber(['ticket', 'attachment'])->name('store.account.tickets.attachments.show');
+    Route::get('/account/notifications', [CustomerNotificationController::class, 'index'])->name('store.account.notifications.index');
+    Route::post('/account/notifications/{notification}/read', [CustomerNotificationController::class, 'markRead'])->name('store.account.notifications.read');
 });
 Route::get('/account/login', [CustomerAccountController::class, 'createLogin'])->name('store.account.login');
 Route::post('/account/login', [CustomerAccountController::class, 'storeLogin'])
@@ -123,6 +145,24 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::post('/{order}/events', [AdminOrderController::class, 'storeEvent'])->whereNumber('order')->name('events.store');
     });
 
+    Route::middleware(['auth', 'admin.permission:returns.manage'])->prefix('returns')->name('returns.')->group(function (): void {
+        Route::get('/', [ReturnCaseController::class, 'index'])->name('index');
+        Route::get('/orders/{order}/create', [ReturnCaseController::class, 'create'])->whereNumber('order')->name('order-create');
+        Route::get('/{return}', [ReturnCaseController::class, 'show'])->whereNumber('return')->name('show');
+        Route::post('/orders/{order}', [ReturnCaseController::class, 'store'])->whereNumber('order')->name('store');
+        Route::patch('/{return}/status', [ReturnCaseController::class, 'transition'])->whereNumber('return')->name('status');
+        Route::post('/{return}/shipments', [ReturnCaseController::class, 'shipment'])->whereNumber('return')->middleware('throttle:20,1')->name('shipments.store');
+        Route::post('/{return}/shipments/{shipment}/events', [ReturnCaseController::class, 'shipmentEvent'])->whereNumber(['return', 'shipment'])->middleware('throttle:30,1')->name('shipments.events.store');
+        Route::post('/{return}/refunds', [ReturnCaseController::class, 'refund'])->whereNumber('return')->name('refunds.store');
+        Route::patch('/{return}/refunds/{refund}/paid', [ReturnCaseController::class, 'markRefundPaid'])->whereNumber(['return', 'refund'])->name('refunds.paid');
+        Route::patch('/{return}/refunds/{refund}/void', [ReturnCaseController::class, 'voidRefund'])->whereNumber(['return', 'refund'])->name('refunds.void');
+    });
+
+    Route::middleware(['auth', 'admin.permission:expenses.manage'])->post('/orders/{order}/costs', [ReturnCaseController::class, 'storeCost'])
+        ->whereNumber('order')->name('orders.costs.store');
+    Route::middleware(['auth', 'admin.permission:expenses.manage'])->post('/orders/{order}/costs/{entry}/reverse', [ReturnCaseController::class, 'reverseCost'])
+        ->whereNumber(['order', 'entry'])->name('orders.costs.reverse');
+
     Route::middleware(['auth', 'admin.permission:shipments.manage'])->group(function (): void {
         Route::get('/shipping-companies', [ShippingCompanyController::class, 'index'])->name('shipping-companies.index');
         Route::post('/shipping-companies', [ShippingCompanyController::class, 'store'])->name('shipping-companies.store');
@@ -138,10 +178,26 @@ Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::patch('/{contactMessage}/status', [AdminContactMessageController::class, 'updateStatus'])->whereNumber('contactMessage')->name('status');
     });
 
+    Route::middleware(['auth', 'admin.permission:support_tickets.manage'])->prefix('support-tickets')->name('support-tickets.')->group(function (): void {
+        Route::get('/', [AdminSupportTicketController::class, 'index'])->name('index');
+        Route::get('/{ticket}', [AdminSupportTicketController::class, 'show'])->whereNumber('ticket')->name('show');
+        Route::post('/from-contact/{contactMessage}', [AdminSupportTicketController::class, 'convertContact'])->middleware('admin.permission:contact_messages.manage')->whereNumber('contactMessage')->name('convert-contact');
+        Route::patch('/{ticket}/assignment', [AdminSupportTicketController::class, 'assign'])->whereNumber('ticket')->name('assignment');
+        Route::patch('/{ticket}/status', [AdminSupportTicketController::class, 'updateStatus'])->whereNumber('ticket')->name('status');
+        Route::post('/{ticket}/messages', [AdminSupportTicketController::class, 'reply'])->whereNumber('ticket')->middleware('throttle:20,1')->name('messages.store');
+        Route::get('/{ticket}/attachments/{attachment}', [AdminSupportTicketController::class, 'attachment'])->whereNumber(['ticket', 'attachment'])->name('attachments.show');
+    });
+    Route::middleware(['auth', 'admin.permission:dashboard.access'])->prefix('notifications')->name('notifications.')->group(function (): void {
+        Route::get('/', [AdminNotificationController::class, 'index'])->name('index');
+        Route::post('/{notification}/read', [AdminNotificationController::class, 'markRead'])->name('read');
+    });
+
     Route::middleware(['auth', 'admin.permission:settings.manage'])->prefix('settings')->name('settings.')->group(function (): void {
         Route::get('/shipping-rates', [ShippingRateController::class, 'edit'])->name('shipping-rates.edit');
         Route::put('/shipping-rates', [ShippingRateController::class, 'update'])->middleware('throttle:20,1')->name('shipping-rates.update');
     });
+
+    Route::middleware(['auth', 'admin.permission:reports.view'])->get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     Route::middleware(['auth', 'admin.permission:users.manage'])->group(function (): void {
         Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
